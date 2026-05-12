@@ -1,0 +1,1510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Layouts Version="7">
+<Layout Name="layout 1" Version="4" BackgroundColor="-1" ForegroundColor="-16777216" Guid="d7a757d4-0b60-4a46-ae43-87fd1a222279" OnlyAddSignalRefWhenVisible="0">
+  <ToolbarSettings>
+    <Toolbars>
+      <Toolbar>
+        <Name>dataStoreBar</Name>
+        <Size>191,31</Size>
+        <Location>3,0</Location>
+        <Visible>1</Visible>
+        <ToolStripPanelName>toolStripContainer1.Top</ToolStripPanelName>
+      </Toolbar>
+      <Toolbar>
+        <Name>activeXBar</Name>
+        <Size>248,31</Size>
+        <Location>211,0</Location>
+        <Visible>0</Visible>
+        <ToolStripPanelName>toolStripContainer1.Top</ToolStripPanelName>
+      </Toolbar>
+      <Toolbar>
+        <Name>layoutsBar</Name>
+        <Size>589,31</Size>
+        <Location>3,31</Location>
+        <Visible>1</Visible>
+        <ToolStripPanelName>toolStripContainer1.Top</ToolStripPanelName>
+      </Toolbar>
+      <Toolbar>
+        <Name>configurationBar</Name>
+        <Size>208,31</Size>
+        <Location>3,62</Location>
+        <Visible>1</Visible>
+        <ToolStripPanelName>toolStripContainer1.Top</ToolStripPanelName>
+      </Toolbar>
+    </Toolbars>
+    <Customize ShowContextMenu="1">
+      <Item Name="custToolbarsMenu" Available="1">
+        <Item Name="configurationBar" Available="1">
+          <Item Name="selectServerButton" Available="1" />
+          <Item Name="selectHdServerButton" Available="1" />
+          <Item Name="ioManagerButton" Available="1" />
+          <Item Name="archiverButton" Available="1" />
+          <Item Name="startServerButton" Available="1" />
+          <Item Name="stopServerButton" Available="1" />
+          <Item Name="preferencesButton" Available="1" />
+        </Item>
+        <Item Name="layoutsBar" Available="1">
+          <Item Name="layoutsComboButton" Available="1" />
+          <Item Name="manageLayoutButton" Available="1" />
+          <Item Name="startLayoutButton" Available="1" />
+          <Item Name="pauseLayoutButton" Available="1" />
+          <Item Name="CamView" Available="1" />
+          <Item Name="EventTable" Available="1" />
+          <Item Name="FFTView" Available="1" />
+          <Item Name="TrendGraph" Available="1" />
+          <Item Name="HdTrendGraph" Available="1" />
+          <Item Name="OrbitView" Available="1" />
+          <Item Name="PLR view" Available="1" />
+          <Item Name="ScopeView" Available="1" />
+          <Item Name="DigiMeter" Available="1" />
+          <Item Name="TextDigiMeter" Available="1" />
+          <Item Name="WatchWindow" Available="1" />
+          <Item Name="FlexibleDiagramViewPQU" Available="1" />
+          <Item Name="PQU phasor diagram" Available="1" />
+        </Item>
+        <Item Name="dataStoreBar" Available="1">
+          <Item Name="startTriggerButton" Available="1" />
+          <Item Name="dataStoresComboButton" Available="1" />
+          <Item Name="stopTriggerButton" Available="1" />
+        </Item>
+      </Item>
+      <Item Name="custMenusMenu" Available="1">
+        <Item Name="fileMenu" Available="1">
+          <Item Name="newMenu" Available="1" />
+          <Item Name="openMenu" Available="1" />
+          <Item Name="saveMenu" Available="1" />
+          <Item Name="createShortcutMenu" Available="1" />
+          <Item Name="printSetupMenu" Available="1" />
+          <Item Name="printMenu" Available="1" />
+          <Item Name="exitMenu" Available="1" />
+        </Item>
+        <Item Name="configureMenu" Available="1">
+          <Item Name="selectServerMenu" Available="1" />
+          <Item Name="ioManagerMenu" Available="1" />
+          <Item Name="archiverMenu" Available="1" />
+          <Item Name="userManagementMenu" Available="1" />
+          <Item Name="serverAccessMenu" Available="1" />
+          <Item Name="startServerMenu" Available="1" />
+          <Item Name="stopServerMenu" Available="1" />
+          <Item Name="selectHdServerMenu" Available="1" />
+          <Item Name="preferencesMenu" Available="1" />
+        </Item>
+        <Item Name="layoutMenu" Available="1">
+          <Item Name="openLayoutMenu" Available="1" />
+          <Item Name="loadLayoutFromServerMenu" Available="1" />
+          <Item Name="saveLayoutMenu" Available="1" />
+          <Item Name="saveLayoutOnServerMenu" Available="1" />
+          <Item Name="manageLayoutMenu" Available="1" />
+          <Item Name="importLayoutMenu" Available="1" />
+          <Item Name="clearLayoutMenu" Available="1" />
+          <Item Name="addViewMenu" Available="1">
+            <Item Name="CamView" Available="1" />
+            <Item Name="EventTable" Available="1" />
+            <Item Name="FFTView" Available="1" />
+            <Item Name="TrendGraph" Available="1" />
+            <Item Name="HdTrendGraph" Available="1" />
+            <Item Name="OrbitView" Available="1" />
+            <Item Name="PLR view" Available="1" />
+            <Item Name="ScopeView" Available="1" />
+            <Item Name="DigiMeter" Available="1" />
+            <Item Name="TextDigiMeter" Available="1" />
+            <Item Name="WatchWindow" Available="1" />
+            <Item Name="FlexibleDiagramViewPQU" Available="1" />
+            <Item Name="PQU phasor diagram" Available="1" />
+          </Item>
+          <Item Name="hideTabsMenu" Available="1" />
+          <Item Name="hideTabBorderMenu" Available="1" />
+          <Item Name="signalTreeMenu" Available="1" />
+          <Item Name="hdSignalTreeMenu" Available="1" />
+          <Item Name="archiverStatusMenu" Available="1" />
+          <Item Name="eventlogMenu" Available="1" />
+          <Item Name="watchWindowMenu" Available="1" />
+          <Item Name="digitalMetersMenu" Available="1" />
+          <Item Name="toolbarsMenu" Available="1">
+            <Item Name="configToolbarMenu" Available="1" />
+            <Item Name="layoutToolbarMenu" Available="1" />
+            <Item Name="datastoreToolbarMenu" Available="1" />
+          </Item>
+          <Item Name="displayStyleMenu" Available="1">
+            <Item Name="menuDSNormal" Available="1" />
+            <Item Name="menuDSFullClient" Available="1" />
+            <Item Name="menuDSFullClientTop" Available="1" />
+            <Item Name="menuDSFullScreen" Available="1" />
+            <Item Name="menuDSFullScreenAll" Available="1" />
+          </Item>
+          <Item Name="languageMenu" Available="1">
+            <Item Name="do not translate" Available="1" />
+            <Item Name="do not translate" Available="1" />
+            <Item Name="do not translate" Available="1" />
+            <Item Name="do not translate" Available="1" />
+          </Item>
+          <Item Name="dictionaryMenu" Available="1" />
+          <Item Name="triggerCustomizeMenu" Available="1" />
+        </Item>
+        <Item Name="helpMainMenu" Available="1">
+          <Item Name="helpMenu" Available="1" />
+          <Item Name="supportMenu" Available="1" />
+          <Item Name="supportFilesMenu" Available="1" />
+          <Item Name="versionInfoMenu" Available="1" />
+          <Item Name="aboutMenu" Available="1" />
+        </Item>
+      </Item>
+      <Item Name="resetCustMenu" Available="1" />
+      <Item Name="showCustMenu" Available="1" />
+    </Customize>
+  </ToolbarSettings>
+  <DockingConfig FormatVersion="10" InsideFill="False" InnerMinimum="20, 20" SavedAt="25.12.2020 22:40:21">
+    <Content Name="Dynamisierungswerteleiste" Visible="False" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="150, 150" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="Dynamisierungswerteleiste" Office2003BackColor="Disable" UniqueName="" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Dynamisierungswerteleiste" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideState">
+        <Content Name="Dynamisierungswerteleiste" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Dynamisierungswerteleiste" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Dynamisierungswerteleiste" UniqueName="" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="Dynamisierung bearbeiten" Visible="False" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="150, 150" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="Dynamisierung bearbeiten" Office2003BackColor="Disable" UniqueName="" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Dynamisierung bearbeiten" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideState">
+        <Content Name="Dynamisierung bearbeiten" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Dynamisierung bearbeiten" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Dynamisierung bearbeiten" UniqueName="" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="Bibliothek" Visible="False" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="150, 150" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="Bibliothek" Office2003BackColor="Disable" UniqueName="" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Bibliothek" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideState">
+        <Content Name="Bibliothek" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Bibliothek" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Bibliothek" UniqueName="" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="Eigenschaften" Visible="False" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="150, 150" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="Eigenschaften" Office2003BackColor="Disable" UniqueName="" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Eigenschaften" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideState">
+        <Content Name="Eigenschaften" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Eigenschaften" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Eigenschaften" UniqueName="" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="Werkzeuge" Visible="False" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="200, 150" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="Werkzeuge" Office2003BackColor="Disable" UniqueName="" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Werkzeuge" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideState">
+        <Content Name="Werkzeuge" UniqueName="" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentDockingAffinity">
+        <Content Name="Werkzeuge" UniqueName="" />
+        <State Value="DockLeft" />
+        <Position Size="200, 150" Location="150, 150" />
+        <Best Count="1">
+          <Item Name="Werkzeuge" />
+        </Best>
+        <Next Count="1">
+          <Item Name="SignalTree" />
+        </Next>
+        <Previous Count="0" />
+        <NextAll Count="5">
+          <Item Name="ArchiverStatus" />
+          <Item Name="EventLog" />
+          <Item Name="TechnoStatus" />
+          <Item Name="DigitalMeters" />
+          <Item Name="SignalTree" />
+        </NextAll>
+        <PreviousAll Count="0" />
+        <Child Type="Crownwood.DotNetMagic.Docking.RestoreZoneAffinity">
+          <Content Name="Werkzeuge" UniqueName="" />
+          <Space Value="100" />
+          <Best Count="1">
+            <Item Name="Werkzeuge" />
+          </Best>
+          <Next Count="0" />
+          <Previous Count="0" />
+          <Child Type="Crownwood.DotNetMagic.Docking.RestoreWindowContent">
+            <Content Name="Werkzeuge" UniqueName="" />
+            <Next Count="0" />
+            <Previous Count="0" />
+            <Selected Value="True" />
+            <Child Type="null" />
+          </Child>
+        </Child>
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Werkzeuge" UniqueName="" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="ibaHD-Signalbaum" Visible="False" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="150, 150" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="ibaHD-Signalbaum" Office2003BackColor="Disable" UniqueName="HdSignalTree" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="ibaHD-Signalbaum" UniqueName="HdSignalTree" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideState">
+        <Content Name="ibaHD-Signalbaum" UniqueName="HdSignalTree" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentDockingAffinity">
+        <Content Name="ibaHD-Signalbaum" UniqueName="HdSignalTree" />
+        <State Value="DockLeft" />
+        <Position Size="150, 150" Location="150, 150" />
+        <Best Count="2">
+          <Item Name="HdSignalTree" />
+          <Item Name="SignalTree" />
+        </Best>
+        <Next Count="0" />
+        <Previous Count="0" />
+        <NextAll Count="4">
+          <Item Name="ArchiverStatus" />
+          <Item Name="EventLog" />
+          <Item Name="TechnoStatus" />
+          <Item Name="DigitalMeters" />
+        </NextAll>
+        <PreviousAll Count="0" />
+        <Child Type="Crownwood.DotNetMagic.Docking.RestoreZoneAffinity">
+          <Content Name="ibaHD-Signalbaum" UniqueName="HdSignalTree" />
+          <Space Value="50" />
+          <Best Count="1">
+            <Item Name="HdSignalTree" />
+          </Best>
+          <Next Count="0" />
+          <Previous Count="1">
+            <Item Name="SignalTree" />
+          </Previous>
+          <Child Type="Crownwood.DotNetMagic.Docking.RestoreWindowContent">
+            <Content Name="ibaHD-Signalbaum" UniqueName="HdSignalTree" />
+            <Next Count="0" />
+            <Previous Count="0" />
+            <Selected Value="True" />
+            <Child Type="null" />
+          </Child>
+        </Child>
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="ibaHD-Signalbaum" UniqueName="HdSignalTree" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="Digitalanzeigen" Visible="True" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="654, 161" DisplayLocation="150, -865" AutoHideSize="150, 150" FloatingSize="654, 218" FullTitle="Digitalanzeigen" Office2003BackColor="Base" UniqueName="DigitalMeters" Office2007BackColor="Base" MediaPlayerBackColor="Base">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Digitalanzeigen" UniqueName="DigitalMeters" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideAffinity">
+        <Content Name="Digitalanzeigen" UniqueName="DigitalMeters" />
+        <State Value="DockBottom" />
+        <Next Count="0" />
+        <Previous Count="3">
+          <Item Name="ArchiverStatus" />
+          <Item Name="EventLog" />
+          <Item Name="TechnoStatus" />
+        </Previous>
+        <NextAll Count="0" />
+        <PreviousAll Count="0" />
+        <CurrentContent Value="True" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentDockingAffinity">
+        <Content Name="Digitalanzeigen" UniqueName="DigitalMeters" />
+        <State Value="DockBottom" />
+        <Position Size="654, 161" Location="150, -865" />
+        <Best Count="4">
+          <Item Name="DigitalMeters" />
+          <Item Name="TechnoStatus" />
+          <Item Name="EventLog" />
+          <Item Name="ArchiverStatus" />
+        </Best>
+        <Next Count="0" />
+        <Previous Count="0" />
+        <NextAll Count="1">
+          <Item Name="SignalTree" />
+        </NextAll>
+        <PreviousAll Count="0" />
+        <Child Type="Crownwood.DotNetMagic.Docking.RestoreZoneAffinity">
+          <Content Name="Digitalanzeigen" UniqueName="DigitalMeters" />
+          <Space Value="100" />
+          <Best Count="4">
+            <Item Name="ArchiverStatus" />
+            <Item Name="EventLog" />
+            <Item Name="TechnoStatus" />
+            <Item Name="DigitalMeters" />
+          </Best>
+          <Next Count="0" />
+          <Previous Count="0" />
+          <Child Type="Crownwood.DotNetMagic.Docking.RestoreWindowContent">
+            <Content Name="Digitalanzeigen" UniqueName="DigitalMeters" />
+            <Next Count="0" />
+            <Previous Count="3">
+              <Item Name="ArchiverStatus" />
+              <Item Name="EventLog" />
+              <Item Name="TechnoStatus" />
+            </Previous>
+            <Selected Value="False" />
+            <Child Type="null" />
+          </Child>
+        </Child>
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentFloatingAffinity">
+        <Content Name="Digitalanzeigen" UniqueName="DigitalMeters" />
+        <State Value="Floating" />
+        <Position Size="654, 241" Location="150, -865" />
+        <Best Count="0" />
+        <Associates Count="0" />
+        <Child Type="Crownwood.DotNetMagic.Docking.RestoreZoneAffinity">
+          <Content Name="Digitalanzeigen" UniqueName="DigitalMeters" />
+          <Space Value="100" />
+          <Best Count="0" />
+          <Next Count="0" />
+          <Previous Count="0" />
+          <Child Type="Crownwood.DotNetMagic.Docking.RestoreWindowContent">
+            <Content Name="Digitalanzeigen" UniqueName="DigitalMeters" />
+            <Next Count="0" />
+            <Previous Count="0" />
+            <Selected Value="True" />
+            <Child Type="null" />
+          </Child>
+        </Child>
+      </FloatingRestore>
+    </Content>
+    <Content Name="Überwachungsfenster" Visible="True" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="150, 161" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="Überwachungsfenster" Office2003BackColor="Disable" UniqueName="TechnoStatus" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Überwachungsfenster" UniqueName="TechnoStatus" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideAffinity">
+        <Content Name="Überwachungsfenster" UniqueName="TechnoStatus" />
+        <State Value="DockBottom" />
+        <Next Count="1">
+          <Item Name="DigitalMeters" />
+        </Next>
+        <Previous Count="2">
+          <Item Name="ArchiverStatus" />
+          <Item Name="EventLog" />
+        </Previous>
+        <NextAll Count="0" />
+        <PreviousAll Count="0" />
+        <CurrentContent Value="False" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentDockingAffinity">
+        <Content Name="Überwachungsfenster" UniqueName="TechnoStatus" />
+        <State Value="DockBottom" />
+        <Position Size="150, 161" Location="150, 150" />
+        <Best Count="3">
+          <Item Name="TechnoStatus" />
+          <Item Name="EventLog" />
+          <Item Name="ArchiverStatus" />
+        </Best>
+        <Next Count="0" />
+        <Previous Count="0" />
+        <NextAll Count="1">
+          <Item Name="SignalTree" />
+        </NextAll>
+        <PreviousAll Count="0" />
+        <Child Type="Crownwood.DotNetMagic.Docking.RestoreZoneAffinity">
+          <Content Name="Überwachungsfenster" UniqueName="TechnoStatus" />
+          <Space Value="100" />
+          <Best Count="3">
+            <Item Name="ArchiverStatus" />
+            <Item Name="EventLog" />
+            <Item Name="TechnoStatus" />
+          </Best>
+          <Next Count="0" />
+          <Previous Count="0" />
+          <Child Type="Crownwood.DotNetMagic.Docking.RestoreWindowContent">
+            <Content Name="Überwachungsfenster" UniqueName="TechnoStatus" />
+            <Next Count="0" />
+            <Previous Count="2">
+              <Item Name="ArchiverStatus" />
+              <Item Name="EventLog" />
+            </Previous>
+            <Selected Value="False" />
+            <Child Type="null" />
+          </Child>
+        </Child>
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Überwachungsfenster" UniqueName="TechnoStatus" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="Datenaufzeichnungsstatus" Visible="True" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="150, 161" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="Datenaufzeichnungsstatus" Office2003BackColor="Disable" UniqueName="ArchiverStatus" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Datenaufzeichnungsstatus" UniqueName="ArchiverStatus" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideAffinity">
+        <Content Name="Datenaufzeichnungsstatus" UniqueName="ArchiverStatus" />
+        <State Value="DockBottom" />
+        <Next Count="3">
+          <Item Name="EventLog" />
+          <Item Name="TechnoStatus" />
+          <Item Name="DigitalMeters" />
+        </Next>
+        <Previous Count="0" />
+        <NextAll Count="0" />
+        <PreviousAll Count="0" />
+        <CurrentContent Value="False" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentDockingAffinity">
+        <Content Name="Datenaufzeichnungsstatus" UniqueName="ArchiverStatus" />
+        <State Value="DockBottom" />
+        <Position Size="150, 161" Location="150, 150" />
+        <Best Count="2">
+          <Item Name="EventLog" />
+          <Item Name="ArchiverStatus" />
+        </Best>
+        <Next Count="0" />
+        <Previous Count="0" />
+        <NextAll Count="1">
+          <Item Name="SignalTree" />
+        </NextAll>
+        <PreviousAll Count="0" />
+        <Child Type="Crownwood.DotNetMagic.Docking.RestoreZoneAffinity">
+          <Content Name="Datenaufzeichnungsstatus" UniqueName="ArchiverStatus" />
+          <Space Value="100" />
+          <Best Count="2">
+            <Item Name="ArchiverStatus" />
+            <Item Name="EventLog" />
+          </Best>
+          <Next Count="0" />
+          <Previous Count="0" />
+          <Child Type="Crownwood.DotNetMagic.Docking.RestoreWindowContent">
+            <Content Name="Datenaufzeichnungsstatus" UniqueName="ArchiverStatus" />
+            <Next Count="1">
+              <Item Name="EventLog" />
+            </Next>
+            <Previous Count="0" />
+            <Selected Value="True" />
+            <Child Type="null" />
+          </Child>
+        </Child>
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Datenaufzeichnungsstatus" UniqueName="ArchiverStatus" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="Ereignisprotokoll" Visible="True" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="150, 161" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="Ereignisprotokoll" Office2003BackColor="Disable" UniqueName="EventLog" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Ereignisprotokoll" UniqueName="EventLog" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideAffinity">
+        <Content Name="Ereignisprotokoll" UniqueName="EventLog" />
+        <State Value="DockBottom" />
+        <Next Count="2">
+          <Item Name="TechnoStatus" />
+          <Item Name="DigitalMeters" />
+        </Next>
+        <Previous Count="1">
+          <Item Name="ArchiverStatus" />
+        </Previous>
+        <NextAll Count="0" />
+        <PreviousAll Count="0" />
+        <CurrentContent Value="False" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentDockingAffinity">
+        <Content Name="Ereignisprotokoll" UniqueName="EventLog" />
+        <State Value="DockBottom" />
+        <Position Size="150, 161" Location="150, 150" />
+        <Best Count="1">
+          <Item Name="EventLog" />
+        </Best>
+        <Next Count="0" />
+        <Previous Count="0" />
+        <NextAll Count="1">
+          <Item Name="SignalTree" />
+        </NextAll>
+        <PreviousAll Count="0" />
+        <Child Type="Crownwood.DotNetMagic.Docking.RestoreZoneAffinity">
+          <Content Name="Ereignisprotokoll" UniqueName="EventLog" />
+          <Space Value="100" />
+          <Best Count="1">
+            <Item Name="EventLog" />
+          </Best>
+          <Next Count="0" />
+          <Previous Count="0" />
+          <Child Type="Crownwood.DotNetMagic.Docking.RestoreWindowContent">
+            <Content Name="Ereignisprotokoll" UniqueName="EventLog" />
+            <Next Count="0" />
+            <Previous Count="0" />
+            <Selected Value="True" />
+            <Child Type="null" />
+          </Child>
+        </Child>
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="Ereignisprotokoll" UniqueName="EventLog" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+    <Content Name="ibaPDA-Signalbaum" Visible="True" Docked="True" AutoHidden="False" CaptionBar="True" CloseButton="True" DisplaySize="369, 150" DisplayLocation="150, 150" AutoHideSize="150, 150" FloatingSize="150, 150" FullTitle="ibaPDA-Signalbaum" Office2003BackColor="Disable" UniqueName="SignalTree" Office2007BackColor="Disable" MediaPlayerBackColor="Disable">
+      <DefaultRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="ibaPDA-Signalbaum" UniqueName="SignalTree" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </DefaultRestore>
+      <AutoHideRestore Type="Crownwood.DotNetMagic.Docking.RestoreAutoHideState">
+        <Content Name="ibaPDA-Signalbaum" UniqueName="SignalTree" />
+        <State Value="DockLeft" />
+        <Child Type="null" />
+      </AutoHideRestore>
+      <DockingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentDockingAffinity">
+        <Content Name="ibaPDA-Signalbaum" UniqueName="SignalTree" />
+        <State Value="DockLeft" />
+        <Position Size="369, 150" Location="150, 150" />
+        <Best Count="1">
+          <Item Name="SignalTree" />
+        </Best>
+        <Next Count="0" />
+        <Previous Count="0" />
+        <NextAll Count="0" />
+        <PreviousAll Count="0" />
+        <Child Type="Crownwood.DotNetMagic.Docking.RestoreZoneAffinity">
+          <Content Name="ibaPDA-Signalbaum" UniqueName="SignalTree" />
+          <Space Value="100" />
+          <Best Count="1">
+            <Item Name="SignalTree" />
+          </Best>
+          <Next Count="0" />
+          <Previous Count="0" />
+          <Child Type="Crownwood.DotNetMagic.Docking.RestoreWindowContent">
+            <Content Name="ibaPDA-Signalbaum" UniqueName="SignalTree" />
+            <Next Count="0" />
+            <Previous Count="0" />
+            <Selected Value="True" />
+            <Child Type="null" />
+          </Child>
+        </Child>
+      </DockingRestore>
+      <FloatingRestore Type="Crownwood.DotNetMagic.Docking.RestoreContentState">
+        <Content Name="ibaPDA-Signalbaum" UniqueName="SignalTree" />
+        <State Value="Floating" />
+        <Child Type="null" />
+      </FloatingRestore>
+    </Content>
+  </DockingConfig>
+  <TabbedGroups FormatVersion="1" ActiveLeaf="3">
+    <CustomGlobalData>
+      <Version>4</Version>
+      <ShowTabs>1</ShowTabs>
+      <ShowTabBorder>1</ShowTabBorder>
+    </CustomGlobalData>
+    <Sequence Count="1" Unique="0" Space="100" Direction="Horizontal">
+      <Leaf Count="1" Unique="3" Space="100">
+        <Page Title="Trendkurve 1" ImageList="False" ImageIndex="-1" Selected="True" Control="null" UniqueName="">
+          <CustomPageData>
+            <View Type="TrendGraph" Guid="76eb6425-f664-4325-8f37-99ee8ed39255">
+              <Recorder Name="Trendkurve 1" Version="8">
+                <Orientation>1</Orientation>
+                <Smoothing>0</Smoothing>
+                <Realtime>1</Realtime>
+                <LegendFormat>1</LegendFormat>
+                <ShowValuesInLegend>1</ShowValuesInLegend>
+                <UseCustomTooltip>0</UseCustomTooltip>
+                <CustomLegendString>%n</CustomLegendString>
+                <CustomTooltipString>%c1
+%c2</CustomTooltipString>
+                <LegendStyle>0</LegendStyle>
+                <UpdateTime>50</UpdateTime>
+                <MaxIdleTime>300</MaxIdleTime>
+                <ShowSignalBars>1</ShowSignalBars>
+                <ShowDigitalOnTop>0</ShowDigitalOnTop>
+                <ShowToolbar>1</ShowToolbar>
+                <ShowGridLines>1</ShowGridLines>
+                <ShowGripper>1</ShowGripper>
+                <ShowYAxis>1</ShowYAxis>
+                <ShowColorAxis>1</ShowColorAxis>
+                <MarkerGridVisibility>1</MarkerGridVisibility>
+                <ManualMarkerGridVisible>0</ManualMarkerGridVisible>
+                <MarkerGridHeight>120</MarkerGridHeight>
+                <MarkerGridColumns>
+                  <TimeColumnsVisible>0</TimeColumnsVisible>
+                  <Version>2</Version>
+                  <Columns>
+                    <Column>
+                      <FieldName>colName</FieldName>
+                      <Width>100</Width>
+                      <VisibleIndex>1</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colX1</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>2</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colX2</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>3</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colX2X1</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>4</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colY1</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>5</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colY2</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>6</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colY2Y1</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>7</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colDYDX</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>-1</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colMin</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>-1</VisibleIndex>
+                    </Column>
+                    <Column>
+                      <FieldName>colMax</FieldName>
+                      <Width>40</Width>
+                      <VisibleIndex>-1</VisibleIndex>
+                    </Column>
+                  </Columns>
+                </MarkerGridColumns>
+                <AttachMarkersToXAxis>1</AttachMarkersToXAxis>
+                <ShowVisibleIcons>0</ShowVisibleIcons>
+                <AllowTextOverlap>1</AllowTextOverlap>
+                <DisableYAxes>0</DisableYAxes>
+                <LastKnownTime>-1</LastKnownTime>
+                <AlwaysShowXAxis>1</AlwaysShowXAxis>
+                <GDI>
+                  <BackgroundColor>FFF0F0F0</BackgroundColor>
+                  <GraphColor>0;FFFFFFFF;1;FFFFFFFF;</GraphColor>
+                  <GridColor>FFD3D3D3</GridColor>
+                  <MinorGridColor>FFD3D3D3</MinorGridColor>
+                  <AxisColor>FF000000</AxisColor>
+                  <SignalColor_0>FF0000FF</SignalColor_0>
+                  <SignalColor_1>FFFF0000</SignalColor_1>
+                  <SignalColor_2>FF008000</SignalColor_2>
+                  <SignalColor_3>FF808000</SignalColor_3>
+                  <SignalColor_4>FF800080</SignalColor_4>
+                  <SignalColor_5>FF008080</SignalColor_5>
+                  <SignalColor_6>FF808080</SignalColor_6>
+                  <SignalColor_7>FF0000CC</SignalColor_7>
+                  <SignalColor_8>FF00CC00</SignalColor_8>
+                  <SignalColor_9>FFCC0000</SignalColor_9>
+                  <SignalColor_10>FF00CCCC</SignalColor_10>
+                  <SignalColor_11>FFCC00CC</SignalColor_11>
+                  <SignalColor_12>FFCCCC00</SignalColor_12>
+                  <SignalColor_13>FF0000FF</SignalColor_13>
+                  <SignalColor_14>FF00FF00</SignalColor_14>
+                  <SignalColor_15>FFFF0000</SignalColor_15>
+                  <AxisFont>Arial, 8pt</AxisFont>
+                  <LegendFont>Arial, 8pt</LegendFont>
+                  <TextFont>Arial, 8pt</TextFont>
+                </GDI>
+                <Printing>
+                  <Background>FFFFFFFF</Background>
+                  <Chart>FFFFFFFF</Chart>
+                  <GridLines>FFD3D3D3</GridLines>
+                  <MinorGridLines>FFD3D3D3</MinorGridLines>
+                  <Axis>FF000000</Axis>
+                  <AllowTransparent>0</AllowTransparent>
+                </Printing>
+                <XAxis>
+                  <Axis Type="1">
+                    <Timespan>400000000</Timespan>
+                    <TimeRange>
+                      <Channel Id="~invalid~" Invalid="1" />
+                      <DefaultValue>40</DefaultValue>
+                    </TimeRange>
+                    <ZoomButtonOptions>
+                      <Enabled>0</Enabled>
+                      <ZoomFactor>2</ZoomFactor>
+                      <PanFactor>0.75</PanFactor>
+                      <PanLargeFactor>2</PanLargeFactor>
+                      <PanStep>-10</PanStep>
+                      <PanLargeStep>-60</PanLargeStep>
+                    </ZoomButtonOptions>
+                    <ShowDate>0</ShowDate>
+                    <TwoDigitYears>0</TwoDigitYears>
+                    <PauseChannel>
+                      <Channel Id="~invalid~" Invalid="1" />
+                    </PauseChannel>
+                    <Unit>0</Unit>
+                  </Axis>
+                </XAxis>
+                <Graphs Count="5">
+                  <Graph Type="0">
+                    <YAxises Count="1">
+                      <Axis Type="0">
+                        <Min>8.74781127929691</Min>
+                        <Max>99444.8638830566</Max>
+                        <ScaleMode>3</ScaleMode>
+                        <ManualScale>
+                          <MinValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>-10200</DefaultValue>
+                          </MinValue>
+                          <MaxValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>10200</DefaultValue>
+                          </MaxValue>
+                        </ManualScale>
+                        <Channels Count="2">
+                          <Channel Id="[0:1]" Version="2">
+                            <ColorIndex>0</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                          <Channel Id="[1:1]" Version="2">
+                            <ColorIndex>1</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                        </Channels>
+                        <DisplayMode>0</DisplayMode>
+                        <UseManualTicks>0</UseManualTicks>
+                        <ManualTickReference>0</ManualTickReference>
+                        <ManualTickMajorStep>1000</ManualTickMajorStep>
+                        <ManualTickNrMinor>0</ManualTickNrMinor>
+                        <ShowMinorTickGridLines>0</ShowMinorTickGridLines>
+                        <ShowUnit>0</ShowUnit>
+                        <FlipScale>0</FlipScale>
+                      </Axis>
+                    </YAxises>
+                    <Title UseDictionary="0" />
+                    <TitleColor>FF000000</TitleColor>
+                    <TitleFont>Microsoft Sans Serif, 8.25pt</TitleFont>
+                    <TitleAlignment>16</TitleAlignment>
+                    <Height>0</Height>
+                  </Graph>
+                  <Graph Type="0">
+                    <YAxises Count="1">
+                      <Axis Type="0">
+                        <Min>-0.5</Min>
+                        <Max>0.5</Max>
+                        <ScaleMode>3</ScaleMode>
+                        <ManualScale>
+                          <MinValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>-10200</DefaultValue>
+                          </MinValue>
+                          <MaxValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>10200</DefaultValue>
+                          </MaxValue>
+                        </ManualScale>
+                        <Channels Count="2">
+                          <Channel Id="[0:2]" Version="2">
+                            <ColorIndex>1</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                          <Channel Id="[1:2]" Version="2">
+                            <ColorIndex>0</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                        </Channels>
+                        <DisplayMode>0</DisplayMode>
+                        <UseManualTicks>0</UseManualTicks>
+                        <ManualTickReference>0</ManualTickReference>
+                        <ManualTickMajorStep>1000</ManualTickMajorStep>
+                        <ManualTickNrMinor>0</ManualTickNrMinor>
+                        <ShowMinorTickGridLines>0</ShowMinorTickGridLines>
+                        <ShowUnit>0</ShowUnit>
+                        <FlipScale>0</FlipScale>
+                      </Axis>
+                    </YAxises>
+                    <Title UseDictionary="0" />
+                    <TitleColor>FF000000</TitleColor>
+                    <TitleFont>Microsoft Sans Serif, 8.25pt</TitleFont>
+                    <TitleAlignment>16</TitleAlignment>
+                    <Height>0</Height>
+                  </Graph>
+                  <Graph Type="0">
+                    <YAxises Count="1">
+                      <Axis Type="0">
+                        <Min>-1.6070290017128</Min>
+                        <Max>1.26736732840538</Max>
+                        <ScaleMode>3</ScaleMode>
+                        <ManualScale>
+                          <MinValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>-10200</DefaultValue>
+                          </MinValue>
+                          <MaxValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>10200</DefaultValue>
+                          </MaxValue>
+                        </ManualScale>
+                        <Channels Count="2">
+                          <Channel Id="[0:17]" Version="2">
+                            <ColorIndex>0</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                          <Channel Id="[1:19]" Version="2">
+                            <ColorIndex>1</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                        </Channels>
+                        <DisplayMode>0</DisplayMode>
+                        <UseManualTicks>0</UseManualTicks>
+                        <ManualTickReference>0</ManualTickReference>
+                        <ManualTickMajorStep>1000</ManualTickMajorStep>
+                        <ManualTickNrMinor>0</ManualTickNrMinor>
+                        <ShowMinorTickGridLines>0</ShowMinorTickGridLines>
+                        <ShowUnit>0</ShowUnit>
+                        <FlipScale>0</FlipScale>
+                      </Axis>
+                    </YAxises>
+                    <Title UseDictionary="0" />
+                    <TitleColor>FF000000</TitleColor>
+                    <TitleFont>Microsoft Sans Serif, 8.25pt</TitleFont>
+                    <TitleAlignment>16</TitleAlignment>
+                    <Height>0</Height>
+                  </Graph>
+                  <Graph Type="0">
+                    <YAxises Count="1">
+                      <Axis Type="0">
+                        <Min>-315.517410774231</Min>
+                        <Max>44.0208526611328</Max>
+                        <ScaleMode>3</ScaleMode>
+                        <ManualScale>
+                          <MinValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>40.2192012405395</DefaultValue>
+                          </MinValue>
+                          <MaxValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>40.3007992172241</DefaultValue>
+                          </MaxValue>
+                        </ManualScale>
+                        <Channels Count="2">
+                          <Channel Id="[0:0]" Version="2">
+                            <ColorIndex>0</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                          <Channel Id="[1:0]" Version="2">
+                            <ColorIndex>1</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                        </Channels>
+                        <DisplayMode>0</DisplayMode>
+                        <UseManualTicks>0</UseManualTicks>
+                        <ManualTickReference>0</ManualTickReference>
+                        <ManualTickMajorStep>1000</ManualTickMajorStep>
+                        <ManualTickNrMinor>0</ManualTickNrMinor>
+                        <ShowMinorTickGridLines>0</ShowMinorTickGridLines>
+                        <ShowUnit>0</ShowUnit>
+                        <FlipScale>0</FlipScale>
+                      </Axis>
+                    </YAxises>
+                    <Title UseDictionary="0" />
+                    <TitleColor>FF000000</TitleColor>
+                    <TitleFont>Microsoft Sans Serif, 8.25pt</TitleFont>
+                    <TitleAlignment>16</TitleAlignment>
+                    <Height>0</Height>
+                  </Graph>
+                  <Graph Type="0">
+                    <YAxises Count="1">
+                      <Axis Type="0">
+                        <Min>-0.5</Min>
+                        <Max>0.5</Max>
+                        <ScaleMode>3</ScaleMode>
+                        <ManualScale>
+                          <MinValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>-0.5</DefaultValue>
+                          </MinValue>
+                          <MaxValue>
+                            <Channel Id="~invalid~" Invalid="1" />
+                            <DefaultValue>0.5</DefaultValue>
+                          </MaxValue>
+                        </ManualScale>
+                        <Channels Count="2">
+                          <Channel Id="[0:2]" Version="2">
+                            <ColorIndex>0</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                          <Channel Id="[1:2]" Version="2">
+                            <ColorIndex>1</ColorIndex>
+                            <PenWidth>1</PenWidth>
+                            <Filled>0</Filled>
+                            <PaintStyle>0</PaintStyle>
+                            <DynamicColor>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicColor>
+                            <DynamicWidth>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </DynamicWidth>
+                            <LengthChannel>
+                              <Channel Id="~invalid~" Invalid="1" />
+                            </LengthChannel>
+                            <LengthResolution>0.100000001490116</LengthResolution>
+                          </Channel>
+                        </Channels>
+                        <DisplayMode>0</DisplayMode>
+                        <UseManualTicks>0</UseManualTicks>
+                        <ManualTickReference>0</ManualTickReference>
+                        <ManualTickMajorStep>1000</ManualTickMajorStep>
+                        <ManualTickNrMinor>0</ManualTickNrMinor>
+                        <ShowMinorTickGridLines>0</ShowMinorTickGridLines>
+                        <ShowUnit>0</ShowUnit>
+                        <FlipScale>0</FlipScale>
+                      </Axis>
+                    </YAxises>
+                    <Title UseDictionary="0" />
+                    <TitleColor>FF000000</TitleColor>
+                    <TitleFont>Microsoft Sans Serif, 8.25pt</TitleFont>
+                    <TitleAlignment>16</TitleAlignment>
+                    <Height>0</Height>
+                  </Graph>
+                </Graphs>
+              </Recorder>
+            </View>
+          </CustomPageData>
+        </Page>
+      </Leaf>
+    </Sequence>
+  </TabbedGroups>
+  <FloatPanel>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>0</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:20]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>1</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:21]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>2</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:22]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>3</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:23]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>4</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:24]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>5</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:25]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>160</Width>
+      <Height>64</Height>
+      <Index>6</Index>
+      <DigiMeter>
+        <size>160, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:18]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>7</ledDigitCount>
+        <ledDecimalCount>0</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>7</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:6]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>8</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:19]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>10</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:0]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+    <View Type="DigiMeter">
+      <Width>120</Width>
+      <Height>64</Height>
+      <Index>9</Index>
+      <DigiMeter>
+        <size>120, 64</size>
+        <font>Arial, 9pt</font>
+        <style>0</style>
+        <updateTime>250</updateTime>
+        <channelId>[0:5]</channelId>
+        <reset>
+          <channelId />
+        </reset>
+        <customTitle UseDictionary="0" />
+        <titleMode>1</titleMode>
+        <back>FFD3D3D3</back>
+        <fore>FF000000</fore>
+        <progStart>FF1E90FF</progStart>
+        <progStop>FF00BFFF</progStop>
+        <ledBack>FF000000</ledBack>
+        <ledDigit>FFFFFF00</ledDigit>
+        <ledDecimal>FFFFA500</ledDecimal>
+        <ledDimDigit>FF3C3C3C</ledDimDigit>
+        <sign>1</sign>
+        <leadingZeros>0</leadingZeros>
+        <showProgress>0</showProgress>
+        <showMinMax>0</showMinMax>
+        <ledDigitCount>5</ledDigitCount>
+        <ledDecimalCount>2</ledDecimalCount>
+      </DigiMeter>
+    </View>
+  </FloatPanel>
+  <WatchWindows>
+    <View Type="WatchWindow">
+      <WatchWindow>
+        <ViewName>Überwachungsansicht</ViewName>
+        <WatchSections>
+          <Section>
+            <Name />
+            <Collapsed>0</Collapsed>
+          </Section>
+        </WatchSections>
+        <WatchItems />
+      </WatchWindow>
+    </View>
+  </WatchWindows>
+</Layout>
+<SelectedLayout>0</SelectedLayout><DisplayStyle>0</DisplayStyle><PrinterSettings><printerName /><mTop>100</mTop><mLeft>100</mLeft><mRight>100</mRight><mBottom>100</mBottom><landscape>0</landscape><copies>1</copies><unit>1</unit><pSize>9</pSize><pSource>15</pSource><scale>0</scale><header>1</header><border>1</border></PrinterSettings><SelectedLayoutSignalId>4503479197827072</SelectedLayoutSignalId><LayoutComboWidth>121</LayoutComboWidth><StartupLayout>-1</StartupLayout><BackupStorage /><UserStringDictionary><Culture><CultureCode>en</CultureCode><Dictionary /></Culture><Culture><CultureCode>fr</CultureCode><Dictionary /></Culture></UserStringDictionary></Layouts>

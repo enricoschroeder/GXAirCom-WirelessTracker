@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArchiverConfiguration Version="20">
+  <UnitOfLength>m</UnitOfLength>
+  <Profiles Count="1">
+    <Profile Name="As is" ReadOnly="1" Version="6">
+      <ProfileType>0</ProfileType>
+      <AbsoluteTimebase>0</AbsoluteTimebase>
+      <Timebase>100000</Timebase>
+      <FilteringMode>0</FilteringMode>
+      <Compression>0</Compression>
+      <Precision>0.1</Precision>
+      <TimeBased>1</TimeBased>
+      <LengthBased>0</LengthBased>
+      <Lengthbase>1000</Lengthbase>
+      <LengthFilterMode>0</LengthFilterMode>
+    </Profile>
+  </Profiles>
+  <ExternalTriggers Count="0" />
+  <UnSyncedExternalTriggers Count="0" />
+  <ArchiverLevels Count="1">
+    <ArchiverLevelConfiguration Name="Aufzeichnung 1">
+      <Active>1</Active>
+      <Locked>0</Locked>
+      <MaximumFileTime>864000000000</MaximumFileTime>
+      <FlushInterval>-10</FlushInterval>
+      <PauseSignal>[65534:259543]</PauseSignal>
+      <StoreTextValueAtStart>0</StoreTextValueAtStart>
+      <TriggerAtStart>0</TriggerAtStart>
+      <AsyncFileAccess>0</AsyncFileAccess>
+      <Password />
+      <StartTrigger>
+        <Unconditional>1</Unconditional>
+        <PreTriggerTime>0</PreTriggerTime>
+        <TriggerSignal>[65534:259543]</TriggerSignal>
+        <TriggerType>0</TriggerType>
+        <TriggerLevel>0</TriggerLevel>
+        <ReOccurenceHandling>0</ReOccurenceHandling>
+        <ExtensionLimit>3</ExtensionLimit>
+        <MaxOverlappedFiles>2</MaxOverlappedFiles>
+        <UsePeriodic>0</UsePeriodic>
+        <PeriodicPeriod>60</PeriodicPeriod>
+        <PeriodicStartHours>0</PeriodicStartHours>
+        <PeriodicStartMinutes>0</PeriodicStartMinutes>
+        <PreTriggerInMemory>0</PreTriggerInMemory>
+        <StartTriggerDeadTime>0</StartTriggerDeadTime>
+        <UseTriggerPool>0</UseTriggerPool>
+        <TriggerPool>
+          <LevelTrigger>0</LevelTrigger>
+          <Signals />
+          <ExternalTriggers />
+        </TriggerPool>
+      </StartTrigger>
+      <StopTrigger>
+        <Unconditional>1</Unconditional>
+        <PostTriggerTime>0</PostTriggerTime>
+        <TriggerSignal>[65534:259543]</TriggerSignal>
+        <TriggerType>1</TriggerType>
+        <TriggerLevel>0</TriggerLevel>
+        <UseTechno>0</UseTechno>
+        <TechnoId>[65534:259543]</TechnoId>
+        <UseTriggerPool>0</UseTriggerPool>
+        <TriggerPool>
+          <LevelTrigger>0</LevelTrigger>
+          <Signals />
+          <ExternalTriggers />
+        </TriggerPool>
+      </StopTrigger>
+      <FileConfiguration>
+        <BaseFileName>pda</BaseFileName>
+        <MaxFileNumber>1000</MaxFileNumber>
+        <CurrentFileIndex>15</CurrentFileIndex>
+        <FileNaming>3</FileNaming>
+        <ReuseTechnoFileName>0</ReuseTechnoFileName>
+        <TechnoFileNameId>[65534:259543]</TechnoFileNameId>
+        <TrimAll>0</TrimAll>
+        <FileExtension>dat</FileExtension>
+        <BaseDirectory>C:\dat\</BaseDirectory>
+        <DriveUserName />
+        <DrivePassword />
+        <BackupDirectory>C:\dat\</BackupDirectory>
+        <MaxSubDirs>31</MaxSubDirs>
+        <SubDirOrganization>2</SubDirOrganization>
+        <StartOfDay>0</StartOfDay>
+        <FirstDayOfWeek>1</FirstDayOfWeek>
+        <WeekRule>2</WeekRule>
+        <SplitSubdirs>1</SplitSubdirs>
+        <ResetFileIndexOnNewDir>1</ResetFileIndexOnNewDir>
+        <Use4NumberYears>1</Use4NumberYears>
+        <MinimumFreeSpace>100</MinimumFreeSpace>
+        <KeepMinimumFiles>0</KeepMinimumFiles>
+        <MinimumNumberOfFiles>100</MinimumNumberOfFiles>
+        <PostProcessingCommand />
+        <TechnoFileNameAtStart>1</TechnoFileNameAtStart>
+        <InfoFieldsAtStart>1</InfoFieldsAtStart>
+        <ReuseInfoFields>0</ReuseInfoFields>
+        <InfoFieldIds />
+        <UseSystemTime>0</UseSystemTime>
+        <MaxFiles>1000</MaxFiles>
+        <Quota>1000</Quota>
+        <AutoCleanup>1</AutoCleanup>
+        <CleanupMode>0</CleanupMode>
+      </FileConfiguration>
+      <Signals Count="46">
+        <Signal>
+          <Id>[0:0]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:1]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:2]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:3]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:4]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:5]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:6]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:7]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:8]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:9]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:10]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:11]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:12]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:13]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:14]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:15]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:16]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:17]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[0:18]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:0]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:1]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:2]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:3]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:4]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:5]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:6]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:7]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:8]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:9]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:10]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:11]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:12]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:13]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:14]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:15]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:16]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:17]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:18]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:19]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:20]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:21]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:22]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:23]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:24]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:25]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+        <Signal>
+          <Id>[1:26]</Id>
+          <Profile>As is</Profile>
+        </Signal>
+      </Signals>
+      <DefaultProfile>As is</DefaultProfile>
+      <DefaultProfileIndex>0</DefaultProfileIndex>
+      <VideoChannels />
+      <ImageTriggersServers />
+    </ArchiverLevelConfiguration>
+  </ArchiverLevels>
+  <HDArchiverLevels Count="0" />
+  <DBArchiverLevels Count="0" />
+  <KafkaArchiverLevels Count="0" />
+  <MindSphereArchiverLevels Count="0" />
+</ArchiverConfiguration>

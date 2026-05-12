@@ -390,7 +390,10 @@ int16_t LoRaClass::begin(float bw, uint8_t sf, uint8_t cr, uint8_t syncWord, int
       sx1262_standby();
       // check SX126X_XOSC_START_ERR flag and clear it
       sx1262CheckAndClearErrors();
-      //SetDIO3AsTcxoCtrl
+      // SetDIO3AsTcxoCtrl : pour boards avec TCXO sur DIO3
+      // (Heltec V3/V4, Wireless Stick V3, T-Beam S3Core, Wireless Tracker)
+      // Le Wireless Tracker a un TCXO sur DIO3 malgré l'apparence cristal dans le schéma
+      // Sans ce setup : STDBY_XOSC échoue → LoRa bloqué au premier TX
       data[0] = 0x00; //DIO3 outputs 1.6 V to supply the TCXO
       // calculate delay
       uint32_t delayValue = (float)5000 / 15.625;

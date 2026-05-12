@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SACConfig Version="1">
+  <EnableReservedLicenses>0</EnableReservedLicenses>
+  <ReservedLicenses />
+  <EnableAllowedClients>0</EnableAllowedClients>
+  <AllowedClients />
+</SACConfig>
