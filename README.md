@@ -7,6 +7,46 @@ This fork adapts the official [GXAirCom firmware](https://github.com/gereic/GXAi
 
 ---
 
+## 🚀 Flash
+
+### Option 1 — Browser flash (no install required, Chrome only)
+
+1. Download the 3 files from the [latest release](../../releases/latest):
+   - `bootloader.bin`
+   - `partitions.bin`
+   - `firmware.bin`
+2. Go to **https://espressif.github.io/esptool-js/**
+3. Put the Wireless Tracker in bootloader mode:
+   - Hold **USER** button → plug USB → release after 2–3 seconds
+4. Click **Connect** → select your COM port
+5. Add the 3 files at these addresses:
+
+   | File | Address |
+   |---|---|
+   | `bootloader.bin` | `0x0000` |
+   | `partitions.bin` | `0x8000` |
+   | `firmware.bin` | `0x10000` |
+
+6. Click **Program** → unplug and replug USB normally
+
+### Option 2 — flash.bat (requires Python + esptool)
+
+Install esptool if needed:
+```bash
+pip install esptool
+```
+Then run `flash.bat` at the root of this repo.
+
+### Option 3 — Build from source (VS Code + PlatformIO)
+
+```bash
+pio run -e Wireless_Tracker -t upload
+```
+
+> **Bootloader mode (ESP32-S3):** Hold USER button → plug USB → release after 2–3 seconds
+
+---
+
 ## ✅ Tested & Working
 
 | Feature | Status |
@@ -36,12 +76,32 @@ This fork adapts the official [GXAirCom firmware](https://github.com/gereic/GXAi
 
 ---
 
+## 📱 Display
+
+| Action | Result |
+|---|---|
+| Short press USER button | Cycle through 3 pages |
+| Long press USER button (~1s) | Power off (deep sleep) |
+
+**Page 0 — Flight dashboard:**
+- Large altitude (left column) + large speed (right column)
+- GPS coordinates
+- FANET neighbor count + time + battery voltage
+
+**Page 1 — FANET neighbors:**
+Total count + list of up to 5 nearby aircraft
+
+**Page 2 — System info:**
+Firmware version, Device ID, free heap, WiFi state, battery voltage
+
+---
+
 ## 🔧 Technical Changes
 
 ### 1. New board type (`src/enums.h`)
 ```cpp
 HELTEC_WIRELESS_TRACKER = 12,
-TFT_ST7789 = 4,  // display enum (used internally)
+TFT_ST7789 = 4,
 ```
 
 ### 2. Board detection & configuration (`src/main.cpp`)
@@ -68,90 +128,50 @@ Full hardware configuration in `case eBoard::HELTEC_WIRELESS_TRACKER`:
 | 45 | I2C SDA | For barometer (not tested) |
 | 46 | I2C SCL | For barometer (not tested) |
 
-### 3. LoRa SX1262 — XTAL vs TCXO fix (`lib/FANETLORA/radio/LoRa.cpp`)
+### 3. LoRa SX1262 — XTAL vs TCXO (`lib/FANETLORA/radio/LoRa.cpp`)
 
-Previous Heltec boards (V3/V4) use a TCXO. The Wireless Tracker V1.2 uses a **32MHz XTAL** on XTA/XTB. After investigation and field testing, the existing TCXO code (`SetDIO3AsTcxoCtrl`) is **kept as-is** — removing it caused crashes on the first TX. The chip behaves correctly with TCXO mode enabled even when using a crystal.
+The Wireless Tracker V1.2 uses a **32MHz XTAL** on XTA/XTB. After field testing, the existing TCXO code (`SetDIO3AsTcxoCtrl`) is kept as-is — removing it caused crashes on the first TX.
 
 ### 4. GPS UC6580 — baud rate & power sequence
 
 - Default baud rate on Wireless Tracker: **115200 baud** (not 9600)
-- GPIO3 (Vext) must be set HIGH **before** any GPS communication
+- GPIO3 (Vext) must be set HIGH before any GPS communication
 - GPIO35 (GNSS_RST) must be pulsed LOW then released HIGH at boot
 - UC6580 cold start time: up to **25 minutes** — this is normal for this chip
-- The baudrate scan (`checkGPSBaudrates()`) is skipped for this board — GPS is initialized directly at 115200
+- The baudrate scan is skipped — GPS is initialized directly at 115200
 
 ### 5. ST7735 display — custom bit-bang driver
 
-No external library required. A minimal SPI bit-bang driver is embedded directly in `main.cpp`:
+No external library required. A minimal SPI bit-bang driver is embedded in `main.cpp`:
 
-```
-TFT_CS  = GPIO38    TFT_DC   = GPIO40
-TFT_MOSI = GPIO42   TFT_SCK  = GPIO41
-TFT_RST  = GPIO39   TFT_BL   = GPIO21
-```
+| Pin | GPIO |
+|---|---|
+| CS | 38 |
+| DC | 40 |
+| MOSI | 42 |
+| SCK | 41 |
+| RST | 39 |
+| Backlight | **21** |
 
-**ST7735 initialization:**
+**ST7735 init parameters:**
 ```
 MADCTL  = 0x68  (MX|MV|BGR — landscape rotation=1)
 XSTART  = 1, YSTART = 26  (MINI160x80 required offsets)
-INVON   = required on this display
-SPI speed: no delayMicroseconds — ~5MHz on ESP32-S3 @ 240MHz
+INVON   = required
 ```
 
-> ⚠️ **Critical:** GPIO18 is **NOT** the display backlight — it is the LoRa TX LED.  
-> The actual TFT backlight is on **GPIO21**.
+> ⚠️ **Critical:** GPIO18 is **NOT** the display backlight — it is the LoRa TX LED. The actual TFT backlight is on **GPIO21**.
 
-### 6. Web interface — `website.h` regenerated
+### 6. Web interface
 
-`src/web/website.h` was regenerated using `generate_website.py` (Python-only, no Node.js required) to add:
-- Board type **12 → "HELTEC Wireless Tracker V1.2"** in the board dropdown
-- Display type **4 → "ST7735 0.96" 160×80 (Wireless Tracker)"** in the display dropdown
+`src/web/website.h` was regenerated using `generate_website.py` (Python-only, no Node.js) to add:
+- Board type **12 → "HELTEC Wireless Tracker V1.2"**
+- Display type **4 → "ST7735 0.96" 160×80 (Wireless Tracker)"**
 
-### 7. `setting.displayType`
-
-Set to `NO_DISPLAY (0)` in the settings for web interface compatibility. The ST7735 display is managed independently by the `taskTFT` FreeRTOS task and does not rely on GXAirCom's OLED subsystem.
-
----
-
-## 🚀 Build & Flash
-
-### Requirements
-- VS Code + PlatformIO extension
-- **Windows**: Node.js is **not required** (minify_www.py is disabled in `platformio.ini`)
-
-### Flash
-```bash
-pio run -e Wireless_Tracker -t upload
-```
-
-### Bootloader mode (ESP32-S3)
-1. Hold **USER** button
-2. Plug in USB
-3. Release after 2–3 seconds
-
-### Regenerate web interface (after editing `src/web/orig/`)
+To regenerate after editing HTML source files in `src/web/orig/`:
 ```bash
 python generate_website.py
 ```
-This replaces `minify_www.py` and requires no Node.js.
-
----
-
-## 📱 Display
-
-| Action | Result |
-|---|---|
-| Short press USER button | Cycle through 3 pages |
-| Long press USER button (~1s) | Power off (deep sleep) |
-
-**Page 0 — Flight dashboard:**  
-Large altitude (left) + large speed (right), GPS coordinates, FANET count, battery
-
-**Page 1 — FANET neighbors:**  
-Total count + list of up to 5 nearby aircraft
-
-**Page 2 — System info:**  
-Firmware version, Device ID, free heap, WiFi state, battery voltage
 
 ---
 
@@ -161,9 +181,11 @@ Firmware version, Device ID, free heap, WiFi state, battery voltage
 - Initial port to Heltec Wireless Tracker V1.2
 - UC6580 GPS support at 115200 baud
 - Custom ST7735 bit-bang display driver
+- Dashboard layout: large altitude + speed, GPS, FANET, battery
 - 3-page TFT display with button navigation
 - Power off via long press
 - Board and display type added to web settings
+- Pre-compiled binaries + browser flash tool
 
 ### v1.1 — Planned
 - [ ] Correct battery percentage calibration
@@ -174,7 +196,7 @@ Firmware version, Device ID, free heap, WiFi state, battery voltage
 ### v2.0 — Ideas
 - [ ] Runtime board auto-detection
 - [ ] Variometer via GNSS altitude differential
-- [ ] Improved display layout with graphical battery bar
+- [ ] Graphical battery bar on display
 
 ---
 
