@@ -107,14 +107,12 @@ XPowersLibInterface *PMU = NULL;
 #define TFT_XSTART 1
 #define TFT_YSTART 26
 
-// SPI bit-bang MODE0 (CPOL=0 CPHA=0) — SCK idle LOW, data sur rising edge
-static void tft_spi_byte(uint8_t b){
-  // Pas de delayMicroseconds : ESP32-S3 240MHz = ~5MHz SPI, dans specs ST7735
-  for(int i=7;i>=0;i--){
-    digitalWrite(TFT_MOSI,(b>>i)&1);
-    digitalWrite(TFT_SCK,HIGH);
-    digitalWrite(TFT_SCK,LOW);
-  }
+// Hardware SPI on SPI3 (HSPI) — SPI2 (FSPI) is used by LoRa on pins 8-11
+static SPIClass tftSpi(HSPI);
+static const SPISettings tftSpiSettings(40000000, MSBFIRST, SPI_MODE0);
+
+static inline void tft_spi_byte(uint8_t b) {
+  tftSpi.transfer(b);
 }
 // Envoie CMD + paramètres en UNE seule transaction CS
 static void tft_write_cmd(uint8_t cmd, const uint8_t *data=nullptr, uint8_t len=0){
@@ -128,10 +126,12 @@ static void tft_write_cmd(uint8_t cmd, const uint8_t *data=nullptr, uint8_t len=
 }
 static void tft_fill(uint16_t color, uint32_t count){
   uint8_t hi=color>>8, lo=color&0xFF;
-  // RAMWR command
+  uint8_t buf[64];
+  for(int i=0;i<64;i+=2){ buf[i]=hi; buf[i+1]=lo; }
   digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW);
-  tft_spi_byte(0x2C);
+  tft_spi_byte(0x2C); // RAMWR
   digitalWrite(TFT_DC,HIGH);
+  while(count>=32){ tftSpi.writeBytes(buf,64); count-=32; }
   while(count--){ tft_spi_byte(hi); tft_spi_byte(lo); }
   digitalWrite(TFT_CS,HIGH);
 }
@@ -237,11 +237,11 @@ static void tft_draw_str2c(int16_t cx, int16_t y, const char* s, uint16_t fg, ui
   tft_draw_str2(cx - w/2, y, s, fg, bg);
 }
 static void tft_init(){
-  pinMode(TFT_CS,OUTPUT);   digitalWrite(TFT_CS,HIGH);
-  pinMode(TFT_DC,OUTPUT);   digitalWrite(TFT_DC,HIGH);
-  pinMode(TFT_MOSI,OUTPUT); digitalWrite(TFT_MOSI,LOW);
-  pinMode(TFT_SCK,OUTPUT);  digitalWrite(TFT_SCK,LOW); // MODE0: SCK idle LOW
+  pinMode(TFT_CS,OUTPUT);  digitalWrite(TFT_CS,HIGH);
+  pinMode(TFT_DC,OUTPUT);  digitalWrite(TFT_DC,HIGH);
   pinMode(TFT_RST,OUTPUT);
+  tftSpi.begin(TFT_SCK, -1, TFT_MOSI, -1); // MISO not needed for display
+  tftSpi.beginTransaction(tftSpiSettings);  // held open — TFT is sole device on HSPI
   // Backlight
   pinMode(TFT_BL,OUTPUT); digitalWrite(TFT_BL,HIGH);
   // Hard reset
