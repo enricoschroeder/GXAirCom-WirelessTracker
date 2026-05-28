@@ -110,6 +110,7 @@ XPowersLibInterface *PMU = NULL;
 // Hardware SPI on SPI3 (HSPI) — SPI2 (FSPI) is used by LoRa on pins 8-11
 static SPIClass tftSpi(HSPI);
 static const SPISettings tftSpiSettings(40000000, MSBFIRST, SPI_MODE0);
+static uint8_t fb[160*80*2]; // 25.6 KB framebuffer, pixels as [hi,lo] pairs
 
 static inline void tft_spi_byte(uint8_t b) {
   tftSpi.transfer(b);
@@ -145,13 +146,19 @@ static void tft_set_window(uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1){
   tft_write_cmd(0x2B,d,4);
 }
 static void tft_fill_screen(uint16_t color){
-  tft_set_window(0,0,159,79); tft_fill(color,160*80);
+  uint8_t hi=color>>8, lo=color&0xFF;
+  uint8_t *p=fb, *end=fb+sizeof(fb);
+  while(p<end){ *p++=hi; *p++=lo; }
 }
 static void tft_fill_rect(int16_t x,int16_t y,int16_t w,int16_t h,uint16_t c){
   if(x<0){w+=x;x=0;} if(y<0){h+=y;y=0;}
   if(x+w>160)w=160-x; if(y+h>80)h=80-y;
   if(w<=0||h<=0) return;
-  tft_set_window(x,y,x+w-1,y+h-1); tft_fill(c,(uint32_t)w*h);
+  uint8_t hi=c>>8, lo=c&0xFF;
+  for(int row=y;row<y+h;row++){
+    uint8_t *p=fb+(row*160+x)*2;
+    for(int col=0;col<w;col++){ *p++=hi; *p++=lo; }
+  }
 }
 // Police 5x8 ASCII 32-127
 static const uint8_t TFT_FONT[] PROGMEM = {
@@ -193,19 +200,17 @@ static void tft_draw_str(int16_t x, int16_t y, const char* s, uint16_t fg, uint1
   if(len==0) return;
   uint8_t fgh=fg>>8,fgl=fg&0xFF,bgh=bg>>8,bgl=bg&0xFF;
   for(int row=0;row<8;row++){
-    tft_set_window(x,y+row,x+len*6-1,y+row);
-    digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW); tft_spi_byte(0x2C);
-    digitalWrite(TFT_DC,HIGH);
+    int py=y+row; if(py<0||py>=80) continue;
     for(int i=0;i<len;i++){
       uint8_t c=(uint8_t)s[i]; if(c<32||c>126)c=32;
-      for(int col=0;col<5;col++){
-        uint8_t bits=pgm_read_byte(TFT_FONT+(c-32)*5+col);
-        uint8_t on=(bits>>row)&1;
-        tft_spi_byte(on?fgh:bgh); tft_spi_byte(on?fgl:bgl);
+      for(int col=0;col<6;col++){
+        int px=x+i*6+col; if(px<0||px>=160) continue;
+        uint8_t on=0;
+        if(col<5){ uint8_t bits=pgm_read_byte(TFT_FONT+(c-32)*5+col); on=(bits>>row)&1; }
+        int idx=(py*160+px)*2;
+        fb[idx]=on?fgh:bgh; fb[idx+1]=on?fgl:bgl;
       }
-      tft_spi_byte(bgh); tft_spi_byte(bgl);
     }
-    digitalWrite(TFT_CS,HIGH);
   }
 }
 static void tft_draw_str2(int16_t x, int16_t y, const char* s, uint16_t fg, uint16_t bg){
@@ -214,27 +219,32 @@ static void tft_draw_str2(int16_t x, int16_t y, const char* s, uint16_t fg, uint
   uint8_t fgh=fg>>8,fgl=fg&0xFF,bgh=bg>>8,bgl=bg&0xFF;
   for(int row=0;row<8;row++){
     for(int sr=0;sr<2;sr++){
-      tft_set_window(x,y+row*2+sr,x+len*12-1,y+row*2+sr);
-      digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW); tft_spi_byte(0x2C);
-      digitalWrite(TFT_DC,HIGH);
+      int py=y+row*2+sr; if(py<0||py>=80) continue;
       for(int i=0;i<len;i++){
         uint8_t c=(uint8_t)s[i]; if(c<32||c>126)c=32;
-        for(int col=0;col<5;col++){
-          uint8_t bits=pgm_read_byte(TFT_FONT+(c-32)*5+col);
-          uint8_t on=(bits>>row)&1;
-          tft_spi_byte(on?fgh:bgh); tft_spi_byte(on?fgl:bgl);
-          tft_spi_byte(on?fgh:bgh); tft_spi_byte(on?fgl:bgl);
+        for(int col=0;col<6;col++){
+          for(int sc=0;sc<2;sc++){
+            int px=x+i*12+col*2+sc; if(px<0||px>=160) continue;
+            uint8_t on=0;
+            if(col<5){ uint8_t bits=pgm_read_byte(TFT_FONT+(c-32)*5+col); on=(bits>>row)&1; }
+            int idx=(py*160+px)*2;
+            fb[idx]=on?fgh:bgh; fb[idx+1]=on?fgl:bgl;
+          }
         }
-        tft_spi_byte(bgh); tft_spi_byte(bgl);
-        tft_spi_byte(bgh); tft_spi_byte(bgl);
       }
-      digitalWrite(TFT_CS,HIGH);
     }
   }
 }
 static void tft_draw_str2c(int16_t cx, int16_t y, const char* s, uint16_t fg, uint16_t bg){
   int16_t w = strlen(s)*12;
   tft_draw_str2(cx - w/2, y, s, fg, bg);
+}
+static void tft_flush(){
+  tft_set_window(0,0,159,79);
+  digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW); tftSpi.transfer(0x2C);
+  digitalWrite(TFT_DC,HIGH);
+  tftSpi.writeBytes(fb,sizeof(fb));
+  digitalWrite(TFT_CS,HIGH);
 }
 static void tft_init(){
   pinMode(TFT_CS,OUTPUT);  digitalWrite(TFT_CS,HIGH);
@@ -6616,8 +6626,10 @@ void taskTFT(void *pvParameters) {
   tft_fill_rect(0,25,160,30,0x001F);
   tft_draw_str(20,28,"GXAirCom",0xFFFF,0x001F);
   tft_draw_str(10,40,"Wireless Tracker",0x07FF,0x001F);
+  tft_flush();
   delay(2000);
   tft_fill_screen(0x0000);
+  tft_flush();
 
   uint32_t tLastRefresh = 0;
   uint8_t lastPage = 255;
@@ -6629,8 +6641,10 @@ void taskTFT(void *pvParameters) {
       tft_fill_screen(0x0000);
       tft_fill_rect(30,30,100,20,0xF800);
       tft_draw_str(35,33,"Power Off",0xFFFF,0xF800);
+      tft_flush();
       delay(1000);
       tft_fill_screen(0x0000);
+      tft_flush();
       digitalWrite(TFT_BL, LOW);
       esp_deep_sleep_start();
     }
@@ -6732,6 +6746,7 @@ void taskTFT(void *pvParameters) {
       snprintf(buf,sizeof(buf),"Batt:%dmV",(int)status.battery.voltage);
       tft_draw_str(2,61,buf,0xF800,0x0000);
     }
+    tft_flush();
   }
 
   log_i("taskTFT: stop");
