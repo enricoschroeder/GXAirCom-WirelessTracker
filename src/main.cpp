@@ -6663,7 +6663,7 @@ void taskTFT(void *pvParameters) {
 
       // Colonne droite : VITESSE
       tft_fill_rect(82,12,78,40,0x0841);
-      tft_draw_str(84,14,"VIT",0x8410,0x0841);
+      tft_draw_str(84,14,"GS",0x8410,0x0841);
       snprintf(buf,sizeof(buf),"%.0f",status.gps.speed*3.6f);
       tft_draw_str2c(121,22,buf,0x07FF,0x0841); // cyan
       tft_draw_str(84,44,"km/h",0x8410,0x0841);
@@ -6674,7 +6674,7 @@ void taskTFT(void *pvParameters) {
         snprintf(buf,sizeof(buf),"%.4fN  %.4fE",status.gps.Lat,status.gps.Lon);
         tft_draw_str(2,53,buf,0x07E0,0x0000);
       } else {
-        tft_draw_str(2,53,"GPS: pas de fix       ",0xF800,0x0000);
+        tft_draw_str(2,53,"GPS: no fix       ",0xF800,0x0000);
       }
 
       // === Footer (y=63-71) : FANET + vario + batt ===
@@ -6696,7 +6696,7 @@ void taskTFT(void *pvParameters) {
     else if (g_tft_page == 1) {
       if(pageChanged) tft_fill_screen(0x0000);
       tft_fill_rect(0,0,160,11,0x07E0);
-      tft_draw_str(2,2,"Voisins FANET   ",0x0000,0x07E0);
+      tft_draw_str(2,2,"FANET Neighbours  ",0x0000,0x07E0);
       uint8_t cnt = fanet.getNeighboursCount();
       snprintf(buf,sizeof(buf),"Total: %d         ",cnt);
       tft_fill_rect(0,12,160,10,0x0000);
@@ -6718,7 +6718,7 @@ void taskTFT(void *pvParameters) {
     else if (g_tft_page == 2) {
       if(pageChanged) tft_fill_screen(0x0000);
       tft_fill_rect(0,0,160,11,0xFFE0);
-      tft_draw_str(2,2,"Systeme         ",0x0000,0xFFE0);
+      tft_draw_str(2,2,"System         ",0x0000,0xFFE0);
       tft_fill_rect(0,12,160,58,0x0000);
       snprintf(buf,sizeof(buf),"FW: " VERSION);
       tft_draw_str(2,13,buf,0xFFFF,0x0000);
