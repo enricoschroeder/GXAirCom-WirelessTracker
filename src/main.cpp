@@ -6664,8 +6664,7 @@ void taskTFT(void *pvParameters) {
       snprintf(buf,sizeof(buf),"GXAirCom %s",fanet.getMyDevId().c_str());
       tft_draw_str(2,2,buf,0xFFFF,0x001F);
       snprintf(buf,sizeof(buf),"%d",status.gps.NumSat);
-      tft_fill_rect(150,1,10,10, status.gps.NumSat>3 ? 0x07E0 : 0xF800); // point vert/rouge
-      tft_draw_str(151,2,buf,0xFFFF, status.gps.NumSat>3 ? 0x07E0 : 0xF800);
+      tft_draw_str(151,2,buf,status.gps.NumSat>3 ? 0x07E0 : 0xF800, 0x001F);
 
       // === 2 colonnes (y=13-50) ===
       // Séparateur vertical
@@ -6688,7 +6687,7 @@ void taskTFT(void *pvParameters) {
       // === GPS coords (y=52-61) ===
       tft_fill_rect(0,52,160,10,0x0000);
       if(status.gps.bHasGPS && status.gps.NumSat>0){
-        snprintf(buf,sizeof(buf),"%.4fN  %.4fE  %02d",status.gps.Lat,status.gps.Lon,status.gps.NumSat);
+        snprintf(buf,sizeof(buf),"%.4fN  %.4fE",status.gps.Lat,status.gps.Lon);
         tft_draw_str(2,53,buf,0x07E0,0x0000);
       } else {
         tft_draw_str(2,53,"GPS: no fix       ",0xF800,0x0000);
