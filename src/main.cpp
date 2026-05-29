@@ -2654,9 +2654,9 @@ void setup() {
 
     // Batterie ADC (même circuit que V3/V4 : R13=390K, R14=100K)
     PinExtPower       = 36;  // Contrôle mesure tension ext
-    PinADCCtrl        = 37;  // Enable ADC
+    PinADCCtrl        = 2;   // VBAT_CTRL — HIGH enables voltage divider
     PinADCVoltage     = 1;   // ADC pin
-    adcVoltageMultiplier = 5.2636f;
+    adcVoltageMultiplier = 4.9f;
 
     // Display ST7789 0.96" 160x80 — init dans setup() pour éviter problème FreeRTOS SPI
     pinMode(18, OUTPUT);
@@ -2719,7 +2719,10 @@ void setup() {
   }
   if (PinADCCtrl >= 0){
     pinMode(PinADCCtrl, OUTPUT); //we have to set pin to measure voltage of Battery
-    digitalWrite(PinADCCtrl,LOW); //set output to Low, so we can measure the voltage  
+    if (setting.boardType == eBoard::HELTEC_WIRELESS_TRACKER)
+      digitalWrite(PinADCCtrl,INPUT_PULLUP); //needs to be INPUT_PULLUP for wireless tracker
+    else
+      digitalWrite(PinADCCtrl,LOW); //set output to Low, so we can measure the voltage  
     log_i("set adcCtrl"); 
     delay(100); 
   }
@@ -6685,7 +6688,7 @@ void taskTFT(void *pvParameters) {
       // === GPS coords (y=52-61) ===
       tft_fill_rect(0,52,160,10,0x0000);
       if(status.gps.bHasGPS && status.gps.NumSat>0){
-        snprintf(buf,sizeof(buf),"%.4fN  %.4fE",status.gps.Lat,status.gps.Lon);
+        snprintf(buf,sizeof(buf),"%.4fN  %.4fE  %02d",status.gps.Lat,status.gps.Lon,status.gps.NumSat);
         tft_draw_str(2,53,buf,0x07E0,0x0000);
       } else {
         tft_draw_str(2,53,"GPS: no fix       ",0xF800,0x0000);
