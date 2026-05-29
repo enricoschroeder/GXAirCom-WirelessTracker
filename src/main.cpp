@@ -2490,7 +2490,7 @@ void setup() {
     PinExtPower       = 36;  // Contrôle mesure tension ext
     PinADCCtrl        = 2;   // VBAT_CTRL — HIGH enables voltage divider
     PinADCVoltage     = 1;   // ADC pin
-    adcVoltageMultiplier = 4.9f;
+    adcVoltageMultiplier = 5.2636f;
 
     // LCD ST7735 0.96" 160x80
     PinLcd_Cs   = 38;
@@ -3739,6 +3739,30 @@ float readBattvoltage(){
   return vBatt;
 }
 
+// Non-linear voltage → SOC mapping for a single-cell 3.7V Li-Ion.
+// Points derived from a typical constant-current discharge curve.
+// Linear interpolation is used between adjacent points.
+static uint8_t battVoltageToPercent(uint16_t mV) {
+  static const struct { uint16_t mV; uint8_t pct; } curve[] = {
+    { 4200, 100 }, { 4150, 97 }, { 4100, 93 }, { 4050, 89 },
+    { 4000, 83 },  { 3950, 76 }, { 3900, 68 }, { 3850, 60 },
+    { 3800, 52 },  { 3750, 44 }, { 3700, 36 }, { 3650, 27 },
+    { 3600, 19 },  { 3550, 12 }, { 3500,  6 }, { 3450,  2 },
+    { 3400,  0 },
+  };
+  const uint8_t N = sizeof(curve) / sizeof(curve[0]);
+  if (mV >= curve[0].mV)     return 100;
+  if (mV <= curve[N-1].mV)   return 0;
+  for (uint8_t i = 0; i < N - 1; i++) {
+    if (mV <= curve[i].mV && mV > curve[i+1].mV) {
+      uint16_t dV   = curve[i].mV  - curve[i+1].mV;
+      uint8_t  dPct = curve[i].pct - curve[i+1].pct;
+      return curve[i+1].pct + (uint8_t)(((uint32_t)(mV - curve[i+1].mV) * dPct) / dV);
+    }
+  }
+  return 0;
+}
+
 bool printBattVoltage(uint32_t tAct){
   static uint32_t tBatt = millis() - 5000;
   if ((tAct - tBatt) >= 5000){
@@ -3753,7 +3777,7 @@ bool printBattVoltage(uint32_t tAct){
       status.battery.voltage = uint16_t(readBattvoltage()*1000);      
     }
     //log_i("Batt =%dV",status.battery.voltage);
-    status.battery.percent = scale(status.battery.voltage,battEmpty,battFull,0,100);
+    status.battery.percent = battVoltageToPercent(status.battery.voltage);
     //log_i("Batt =%d%%",status.battery.percent);
     //log_i("Batt %dV; %d%%",status.battery.voltage,status.battery.percent);
 
