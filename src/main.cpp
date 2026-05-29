@@ -91,182 +91,8 @@ XPowersLibInterface *PMU = NULL;
 #if defined(SSD1306) || defined(SH1106G)
 #include <oled.h>
 #endif
-// Display ST7789 : driver minimal bit-bang inline, aucune lib externe
 #ifdef WIRELESS_TRACKER
-// ============================================================
-// Driver ST7789 minimal bit-bang — aucune lib externe requise
-// Pins: CS=38 DC=40 MOSI=42 SCK=41 RST=39
-// ============================================================
-#define TFT_CS   38
-#define TFT_DC   40
-#define TFT_MOSI 42
-#define TFT_SCK  41
-#define TFT_RST  39
-#define TFT_BL   21   // backlight GPIO21 (pas 18!)
-// ST7735 MINI160x80 — offsets corrects pour Wireless Tracker V1.2
-#define TFT_XSTART 1
-#define TFT_YSTART 26
-
-// Hardware SPI on SPI3 (HSPI) — SPI2 (FSPI) is used by LoRa on pins 8-11
-static SPIClass tftSpi(HSPI);
-static const SPISettings tftSpiSettings(40000000, MSBFIRST, SPI_MODE0);
-static uint8_t fb[160*80*2]; // 25.6 KB framebuffer, pixels as [hi,lo] pairs
-
-static inline void tft_spi_byte(uint8_t b) {
-  tftSpi.transfer(b);
-}
-// Envoie CMD + paramètres en UNE seule transaction CS
-static void tft_write_cmd(uint8_t cmd, const uint8_t *data=nullptr, uint8_t len=0){
-  digitalWrite(TFT_CS,LOW);
-  digitalWrite(TFT_DC,LOW);  tft_spi_byte(cmd);
-  if(data && len){
-    digitalWrite(TFT_DC,HIGH);
-    for(uint8_t i=0;i<len;i++) tft_spi_byte(data[i]);
-  }
-  digitalWrite(TFT_CS,HIGH);
-}
-static void tft_fill(uint16_t color, uint32_t count){
-  uint8_t hi=color>>8, lo=color&0xFF;
-  uint8_t buf[64];
-  for(int i=0;i<64;i+=2){ buf[i]=hi; buf[i+1]=lo; }
-  digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW);
-  tft_spi_byte(0x2C); // RAMWR
-  digitalWrite(TFT_DC,HIGH);
-  while(count>=32){ tftSpi.writeBytes(buf,64); count-=32; }
-  while(count--){ tft_spi_byte(hi); tft_spi_byte(lo); }
-  digitalWrite(TFT_CS,HIGH);
-}
-static void tft_set_window(uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1){
-  uint8_t d[4];
-  x0+=TFT_XSTART; x1+=TFT_XSTART;
-  y0+=TFT_YSTART; y1+=TFT_YSTART;
-  d[0]=x0>>8; d[1]=x0; d[2]=x1>>8; d[3]=x1;
-  tft_write_cmd(0x2A,d,4);
-  d[0]=y0>>8; d[1]=y0; d[2]=y1>>8; d[3]=y1;
-  tft_write_cmd(0x2B,d,4);
-}
-static void tft_fill_screen(uint16_t color){
-  uint8_t hi=color>>8, lo=color&0xFF;
-  uint8_t *p=fb, *end=fb+sizeof(fb);
-  while(p<end){ *p++=hi; *p++=lo; }
-}
-static void tft_fill_rect(int16_t x,int16_t y,int16_t w,int16_t h,uint16_t c){
-  if(x<0){w+=x;x=0;} if(y<0){h+=y;y=0;}
-  if(x+w>160)w=160-x; if(y+h>80)h=80-y;
-  if(w<=0||h<=0) return;
-  uint8_t hi=c>>8, lo=c&0xFF;
-  for(int row=y;row<y+h;row++){
-    uint8_t *p=fb+(row*160+x)*2;
-    for(int col=0;col<w;col++){ *p++=hi; *p++=lo; }
-  }
-}
-// Police 5x8 ASCII 32-127
-static const uint8_t TFT_FONT[] PROGMEM = {
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x5F,0x00,0x00,0x00,0x07,0x00,0x07,0x00,
-0x14,0x7F,0x14,0x7F,0x14,0x24,0x2A,0x7F,0x2A,0x12,0x23,0x13,0x08,0x64,0x62,
-0x36,0x49,0x56,0x20,0x50,0x00,0x08,0x07,0x03,0x00,0x00,0x1C,0x22,0x41,0x00,
-0x00,0x41,0x22,0x1C,0x00,0x2A,0x1C,0x7F,0x1C,0x2A,0x08,0x08,0x3E,0x08,0x08,
-0x00,0x80,0x70,0x30,0x00,0x08,0x08,0x08,0x08,0x08,0x00,0x00,0x60,0x60,0x00,
-0x20,0x10,0x08,0x04,0x02,0x3E,0x51,0x49,0x45,0x3E,0x00,0x42,0x7F,0x40,0x00,
-0x72,0x49,0x49,0x49,0x46,0x21,0x41,0x49,0x4D,0x33,0x18,0x14,0x12,0x7F,0x10,
-0x27,0x45,0x45,0x45,0x39,0x3C,0x4A,0x49,0x49,0x31,0x41,0x21,0x11,0x09,0x07,
-0x36,0x49,0x49,0x49,0x36,0x46,0x49,0x49,0x29,0x1E,0x00,0x00,0x14,0x00,0x00,
-0x00,0x40,0x34,0x00,0x00,0x00,0x08,0x14,0x22,0x41,0x14,0x14,0x14,0x14,0x14,
-0x00,0x41,0x22,0x14,0x08,0x02,0x01,0x59,0x09,0x06,0x3E,0x41,0x5D,0x59,0x4E,
-0x7C,0x12,0x11,0x12,0x7C,0x7F,0x49,0x49,0x49,0x36,0x3E,0x41,0x41,0x41,0x22,
-0x7F,0x41,0x41,0x41,0x3E,0x7F,0x49,0x49,0x49,0x41,0x7F,0x09,0x09,0x09,0x01,
-0x3E,0x41,0x41,0x51,0x73,0x7F,0x08,0x08,0x08,0x7F,0x00,0x41,0x7F,0x41,0x00,
-0x20,0x40,0x41,0x3F,0x01,0x7F,0x08,0x14,0x22,0x41,0x7F,0x40,0x40,0x40,0x40,
-0x7F,0x02,0x1C,0x02,0x7F,0x7F,0x04,0x08,0x10,0x7F,0x3E,0x41,0x41,0x41,0x3E,
-0x7F,0x09,0x09,0x09,0x06,0x3E,0x41,0x51,0x21,0x5E,0x7F,0x09,0x19,0x29,0x46,
-0x26,0x49,0x49,0x49,0x32,0x03,0x01,0x7F,0x01,0x03,0x3F,0x40,0x40,0x40,0x3F,
-0x1F,0x20,0x40,0x20,0x1F,0x3F,0x40,0x38,0x40,0x3F,0x63,0x14,0x08,0x14,0x63,
-0x03,0x04,0x78,0x04,0x03,0x61,0x59,0x49,0x4D,0x43,0x00,0x7F,0x41,0x41,0x41,
-0x02,0x04,0x08,0x10,0x20,0x00,0x41,0x41,0x41,0x7F,0x04,0x02,0x01,0x02,0x04,
-0x40,0x40,0x40,0x40,0x40,0x00,0x03,0x07,0x08,0x00,0x20,0x54,0x54,0x78,0x40,
-0x7F,0x28,0x44,0x44,0x38,0x38,0x44,0x44,0x44,0x28,0x38,0x44,0x44,0x28,0x7F,
-0x38,0x54,0x54,0x54,0x18,0x00,0x08,0x7E,0x09,0x02,0x18,0xA4,0xA4,0x9C,0x78,
-0x7F,0x08,0x04,0x04,0x78,0x00,0x44,0x7D,0x40,0x00,0x20,0x40,0x40,0x3D,0x00,
-0x7F,0x10,0x28,0x44,0x00,0x00,0x41,0x7F,0x40,0x00,0x7C,0x04,0x78,0x04,0x78,
-0x7C,0x08,0x04,0x04,0x78,0x38,0x44,0x44,0x44,0x38,0xFC,0x18,0x24,0x24,0x18,
-0x18,0x24,0x24,0x18,0xFC,0x7C,0x08,0x04,0x04,0x08,0x48,0x54,0x54,0x54,0x24,
-0x04,0x04,0x3F,0x44,0x24,0x3C,0x40,0x40,0x20,0x7C,0x1C,0x20,0x40,0x20,0x1C,
-0x3C,0x40,0x30,0x40,0x3C,0x44,0x28,0x10,0x28,0x44,0x4C,0x90,0x90,0x90,0x7C,
-0x44,0x64,0x54,0x4C,0x44,0x00,0x08,0x36,0x41,0x00,0x00,0x00,0x77,0x00,0x00,
-0x00,0x41,0x36,0x08,0x00,0x02,0x01,0x02,0x04,0x02};
-
-static void tft_draw_str(int16_t x, int16_t y, const char* s, uint16_t fg, uint16_t bg) {
-  int len = strlen(s);
-  if(len==0) return;
-  uint8_t fgh=fg>>8,fgl=fg&0xFF,bgh=bg>>8,bgl=bg&0xFF;
-  for(int row=0;row<8;row++){
-    int py=y+row; if(py<0||py>=80) continue;
-    for(int i=0;i<len;i++){
-      uint8_t c=(uint8_t)s[i]; if(c<32||c>126)c=32;
-      for(int col=0;col<6;col++){
-        int px=x+i*6+col; if(px<0||px>=160) continue;
-        uint8_t on=0;
-        if(col<5){ uint8_t bits=pgm_read_byte(TFT_FONT+(c-32)*5+col); on=(bits>>row)&1; }
-        int idx=(py*160+px)*2;
-        fb[idx]=on?fgh:bgh; fb[idx+1]=on?fgl:bgl;
-      }
-    }
-  }
-}
-static void tft_draw_str2(int16_t x, int16_t y, const char* s, uint16_t fg, uint16_t bg){
-  int len = strlen(s);
-  if(len==0) return;
-  uint8_t fgh=fg>>8,fgl=fg&0xFF,bgh=bg>>8,bgl=bg&0xFF;
-  for(int row=0;row<8;row++){
-    for(int sr=0;sr<2;sr++){
-      int py=y+row*2+sr; if(py<0||py>=80) continue;
-      for(int i=0;i<len;i++){
-        uint8_t c=(uint8_t)s[i]; if(c<32||c>126)c=32;
-        for(int col=0;col<6;col++){
-          for(int sc=0;sc<2;sc++){
-            int px=x+i*12+col*2+sc; if(px<0||px>=160) continue;
-            uint8_t on=0;
-            if(col<5){ uint8_t bits=pgm_read_byte(TFT_FONT+(c-32)*5+col); on=(bits>>row)&1; }
-            int idx=(py*160+px)*2;
-            fb[idx]=on?fgh:bgh; fb[idx+1]=on?fgl:bgl;
-          }
-        }
-      }
-    }
-  }
-}
-static void tft_draw_str2c(int16_t cx, int16_t y, const char* s, uint16_t fg, uint16_t bg){
-  int16_t w = strlen(s)*12;
-  tft_draw_str2(cx - w/2, y, s, fg, bg);
-}
-static void tft_flush(){
-  tft_set_window(0,0,159,79);
-  digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW); tftSpi.transfer(0x2C);
-  digitalWrite(TFT_DC,HIGH);
-  tftSpi.writeBytes(fb,sizeof(fb));
-  digitalWrite(TFT_CS,HIGH);
-}
-static void tft_init(){
-  pinMode(TFT_CS,OUTPUT);  digitalWrite(TFT_CS,HIGH);
-  pinMode(TFT_DC,OUTPUT);  digitalWrite(TFT_DC,HIGH);
-  pinMode(TFT_RST,OUTPUT);
-  tftSpi.begin(TFT_SCK, -1, TFT_MOSI, -1); // MISO not needed for display
-  tftSpi.beginTransaction(tftSpiSettings);  // held open — TFT is sole device on HSPI
-  // Backlight
-  pinMode(TFT_BL,OUTPUT); digitalWrite(TFT_BL,HIGH);
-  // Hard reset
-  digitalWrite(TFT_RST,HIGH); delay(50);
-  digitalWrite(TFT_RST,LOW);  delay(100);
-  digitalWrite(TFT_RST,HIGH); delay(200);
-  // Init
-  uint8_t d[4];
-  tft_write_cmd(0x01);      delay(150); // SWRESET
-  tft_write_cmd(0x11);      delay(500); // SLPOUT
-  d[0]=0x05; tft_write_cmd(0x3A,d,1); delay(10); // COLMOD 16bit ST7735
-  d[0]=0x68; tft_write_cmd(0x36,d,1); // MADCTL rot=1 (MX|MV|BGR) landscape
-  tft_write_cmd(0x21);      delay(10); // INVON requis sur ce display
-  tft_write_cmd(0x29);      delay(10); // DISPON
-}
+#include "LCD.h"
 #endif // WIRELESS_TRACKER
 
 
@@ -428,6 +254,14 @@ int8_t PinEink_Cs     =  15;
 int8_t PinEink_Clk    =  4;
 int8_t PinEink_Din    =  2;
 
+//lcd
+int8_t PinLcd_Cs   = -1;
+int8_t PinLcd_Dc   = -1;
+int8_t PinLcd_Rst  = -1;
+int8_t PinLcd_Sck  = -1;
+int8_t PinLcd_Mosi = -1;
+int8_t PinLcd_Bl   = -1;
+
 
 //LED
 int8_t PinUserLed = -1;
@@ -550,7 +384,7 @@ void taskEInk(void *pvParameters);
 void taskOled(void *pvParameters);
 #endif
 #ifdef WIRELESS_TRACKER
-void taskTFT(void *pvParameters);
+void taskLCD(void *pvParameters);
 #endif
 #ifdef FLARMLOGGER
 SemaphoreHandle_t FlarmLogQueue = nullptr;
@@ -2658,11 +2492,14 @@ void setup() {
     PinADCVoltage     = 1;   // ADC pin
     adcVoltageMultiplier = 4.9f;
 
-    // Display ST7789 0.96" 160x80 — init dans setup() pour éviter problème FreeRTOS SPI
-    pinMode(18, OUTPUT);
-    digitalWrite(18, HIGH);  // backlight ON
-    setting.displayType = NO_DISPLAY;
-    // TFT init déplacé dans taskTFT
+    // LCD ST7735 0.96" 160x80
+    PinLcd_Cs   = 38;
+    PinLcd_Dc   = 40;
+    PinLcd_Rst  = 39;
+    PinLcd_Sck  = 41;
+    PinLcd_Mosi = 42;
+    PinLcd_Bl   = 21;
+    setting.displayType = TFT_ST7789;
 
     break;
 
@@ -2786,7 +2623,7 @@ xOutputMutex = xSemaphoreCreateMutex();
 xTaskCreatePinnedToCore(taskOled, "taskOled", 6500, NULL, 8, &xHandleOled, ARDUINO_RUNNING_CORE1); //background Oled
 #endif
 #ifdef WIRELESS_TRACKER
-xTaskCreatePinnedToCore(taskTFT, "taskTFT", 6500, NULL, 6, &xHandleTFT, ARDUINO_RUNNING_CORE1); //ST7789 TFT
+xTaskCreatePinnedToCore(taskLCD, "taskLCD", 6500, NULL, 6, &xHandleTFT, ARDUINO_RUNNING_CORE1); //ST7789 TFT
 #endif
   xTaskCreatePinnedToCore(taskBackGround, "taskBackGround", 6500, NULL, 5, &xHandleBackground, ARDUINO_RUNNING_CORE1); //background task
   #ifdef BLUETOOTH
@@ -6612,146 +6449,18 @@ void taskBackGround(void *pvParameters){
 	}
 }
 
-// ============================================================
-// taskTFT — Affichage ST7789 0.96" 160x80 — Wireless Tracker
-// SPI bus HSPI (séparé du LoRa qui utilise FSPI)
-// Pins: SCK=41 MOSI=42 CS=38 DC=40 RST=39 LEDA=18
-// ============================================================
 #ifdef WIRELESS_TRACKER
-void taskTFT(void *pvParameters) {
-  log_i("taskTFT: start");
-  // Init display ici (pas dans setup pour eviter watchdog)
-  tft_init();
-  log_i("taskTFT: TFT init OK");
-
-  // Splash screen GXAirCom
-  tft_fill_screen(0x0000);
-  tft_fill_rect(0,25,160,30,0x001F);
-  tft_draw_str(20,28,"GXAirCom",0xFFFF,0x001F);
-  tft_draw_str(10,40,"Wireless Tracker",0x07FF,0x001F);
-  tft_flush();
-  delay(2000);
-  tft_fill_screen(0x0000);
-  tft_flush();
-
-  uint32_t tLastRefresh = 0;
-  uint8_t lastPage = 255;
-  char buf[32];
-
+void taskLCD(void *pvParameters) {
+  log_i("taskLCD: start");
+  LCD lcd;
+  lcd.begin(PinLcd_Cs, PinLcd_Dc, PinLcd_Rst, PinLcd_Sck, PinLcd_Mosi, PinLcd_Bl);
   while (true) {
-    // Power off sur long press
-    if (bPowerOff) {
-      tft_fill_screen(0x0000);
-      tft_fill_rect(30,30,100,20,0xF800);
-      tft_draw_str(35,33,"Power Off",0xFFFF,0xF800);
-      tft_flush();
-      delay(1000);
-      tft_fill_screen(0x0000);
-      tft_flush();
-      digitalWrite(TFT_BL, LOW);
-      esp_deep_sleep_start();
-    }
-
-    bool pageChanged = (g_tft_page != lastPage);
-    if (!pageChanged && millis() - tLastRefresh < 1000) { delay(50); continue; }
-    tLastRefresh = millis();
-    lastPage = g_tft_page;
-
-    // ---- PAGE 0 : Dashboard 2 colonnes (Option B) ----
-    if (g_tft_page == 0) {
-      // === Header (y=0-11) bleu : GXAirCom + DevID + sats ===
-      tft_fill_rect(0,0,160,12,0x001F);
-      snprintf(buf,sizeof(buf),"GXAirCom %s",fanet.getMyDevId().c_str());
-      tft_draw_str(2,2,buf,0xFFFF,0x001F);
-      snprintf(buf,sizeof(buf),"%02d",status.gps.NumSat);
-      tft_draw_str(145,2,buf,status.gps.NumSat>3 ? 0x07E0 : 0xF800, 0x001F);
-
-      // === 2 colonnes (y=13-50) ===
-      // Séparateur vertical
-      tft_fill_rect(78,12,4,40,0x2104); // gris foncé
-
-      // Colonne gauche : ALTITUDE
-      tft_fill_rect(0,12,78,40,0x0841); // fond très sombre
-      tft_draw_str(2,14,"ALT",0x8410,0x0841);
-      snprintf(buf,sizeof(buf),"%d",(int)status.gps.alt);
-      tft_draw_str2c(38,22,buf,0xFFFF,0x0841); // centré sur x=38
-      tft_draw_str(60,44,"m",0x8410,0x0841);
-
-      // Colonne droite : VITESSE
-      tft_fill_rect(82,12,78,40,0x0841);
-      tft_draw_str(84,14,"GS",0x8410,0x0841);
-      snprintf(buf,sizeof(buf),"%.0f",status.gps.speed*3.6f);
-      tft_draw_str2c(121,22,buf,0x07FF,0x0841); // cyan
-      tft_draw_str(84,44,"km/h",0x8410,0x0841);
-
-      // === GPS coords (y=52-61) ===
-      tft_fill_rect(0,52,160,10,0x0000);
-      if(status.gps.bHasGPS && status.gps.NumSat>0){
-        snprintf(buf,sizeof(buf),"%.4fN  %.4fE",status.gps.Lat,status.gps.Lon);
-        tft_draw_str(2,53,buf,0x07E0,0x0000);
-      } else {
-        tft_draw_str(2,53,"GPS: no fix       ",0xF800,0x0000);
-      }
-
-      // === Footer (y=63-71) : FANET + vario + batt ===
-      tft_fill_rect(0,63,160,10,0x0000);
-      char vbuf[12], fbuf[12], bbuf[16];
-      snprintf(fbuf,sizeof(fbuf),"F:%d",(int)fanet.getNeighboursCount());
-      snprintf(vbuf,sizeof(vbuf),"  -- ");
-      if(strlen(status.gps.Time)==6)
-        snprintf(vbuf,sizeof(vbuf),"%c%c:%c%c",
-          status.gps.Time[0],status.gps.Time[1],
-          status.gps.Time[2],status.gps.Time[3]);
-      snprintf(bbuf,sizeof(bbuf),"%dmV %02d%%",(int)status.battery.voltage,status.battery.percent);
-      tft_draw_str(2,64,fbuf,0xFFE0,0x0000);
-      tft_draw_str(50,64,vbuf,0xFFFF,0x0000);
-      tft_draw_str(95,64,bbuf,0xF800,0x0000);
-    }
-
-    // ---- PAGE 1 : Voisins FANET ----
-    else if (g_tft_page == 1) {
-      if(pageChanged) tft_fill_screen(0x0000);
-      tft_fill_rect(0,0,160,11,0x07E0);
-      tft_draw_str(2,2,"FANET Neighbours  ",0x0000,0x07E0);
-      uint8_t cnt = fanet.getNeighboursCount();
-      snprintf(buf,sizeof(buf),"Total: %d         ",cnt);
-      tft_fill_rect(0,12,160,10,0x0000);
-      tft_draw_str(2,13,buf,0xFFFF,0x0000);
-      // Afficher les 5 premiers voisins
-      for(int n=0;n<5;n++){
-        tft_fill_rect(0,24+n*11,160,10,0x0000);
-        int16_t idx = fanet.getNextNeighbor(n);
-        if(idx >= 0){
-          String name = fanet.getNeighbourName(fanet.getNextNeighbor(n));
-          if(name.length()==0) snprintf(buf,sizeof(buf),"Voisin #%d    ",n+1);
-          else snprintf(buf,sizeof(buf),"%s",name.c_str());
-          tft_draw_str(2,25+n*11,buf,0x07FF,0x0000);
-        }
-      }
-    }
-
-    // ---- PAGE 2 : Infos système ----
-    else if (g_tft_page == 2) {
-      if(pageChanged) tft_fill_screen(0x0000);
-      tft_fill_rect(0,0,160,11,0xFFE0);
-      tft_draw_str(2,2,"System         ",0x0000,0xFFE0);
-      tft_fill_rect(0,12,160,58,0x0000);
-      snprintf(buf,sizeof(buf),"FW: " VERSION);
-      tft_draw_str(2,13,buf,0xFFFF,0x0000);
-      snprintf(buf,sizeof(buf),"ID: %s",fanet.getMyDevId().c_str());
-      tft_draw_str(2,25,buf,0x07FF,0x0000);
-      snprintf(buf,sizeof(buf),"Heap:%dkB",(int)(ESP.getFreeHeap()/1024));
-      tft_draw_str(2,37,buf,0x07E0,0x0000);
-      snprintf(buf,sizeof(buf),"WiFi: %s",
-        status.wifiAP.state==CONNECTED?"ON":"OFF");
-      tft_draw_str(2,49,buf,0xFFE0,0x0000);
-      snprintf(buf,sizeof(buf),"Batt:%dmV",(int)status.battery.voltage);
-      tft_draw_str(2,61,buf,0xF800,0x0000);
-    }
-    tft_flush();
+    lcd.run();
+    delay(10);
+    if (bPowerOff) break;
   }
-
-  log_i("taskTFT: stop");
+  lcd.end();
+  log_i("taskLCD: stop");
   vTaskDelete(xHandleTFT);
 }
 #endif // WIRELESS_TRACKER
