@@ -6663,8 +6663,8 @@ void taskTFT(void *pvParameters) {
       tft_fill_rect(0,0,160,12,0x001F);
       snprintf(buf,sizeof(buf),"GXAirCom %s",fanet.getMyDevId().c_str());
       tft_draw_str(2,2,buf,0xFFFF,0x001F);
-      snprintf(buf,sizeof(buf),"%d",status.gps.NumSat);
-      tft_draw_str(151,2,buf,status.gps.NumSat>3 ? 0x07E0 : 0xF800, 0x001F);
+      snprintf(buf,sizeof(buf),"%02d",status.gps.NumSat);
+      tft_draw_str(145,2,buf,status.gps.NumSat>3 ? 0x07E0 : 0xF800, 0x001F);
 
       // === 2 colonnes (y=13-50) ===
       // Séparateur vertical
@@ -6702,10 +6702,10 @@ void taskTFT(void *pvParameters) {
         snprintf(vbuf,sizeof(vbuf),"%c%c:%c%c",
           status.gps.Time[0],status.gps.Time[1],
           status.gps.Time[2],status.gps.Time[3]);
-      snprintf(bbuf,sizeof(bbuf),"%dmV",(int)status.battery.voltage);
+      snprintf(bbuf,sizeof(bbuf),"%dmV %02d%%",(int)status.battery.voltage,status.battery.percent);
       tft_draw_str(2,64,fbuf,0xFFE0,0x0000);
       tft_draw_str(50,64,vbuf,0xFFFF,0x0000);
-      tft_draw_str(110,64,bbuf,0xF800,0x0000);
+      tft_draw_str(95,64,bbuf,0xF800,0x0000);
     }
 
     // ---- PAGE 1 : Voisins FANET ----
