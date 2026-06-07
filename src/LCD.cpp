@@ -53,7 +53,6 @@ void LCD::end() {
   delay(1000);
   display->fillScreen(ST77XX_BLACK);
   digitalWrite(pinBL, LOW);
-  esp_deep_sleep_start();
 }
 
 void LCD::run() {
@@ -111,7 +110,7 @@ void LCD::drawPage0() {
   display->setTextColor(0x8410, colBg);
   display->setCursor(84, 14);
   display->print("GS");
-  snprintf(buf, sizeof(buf), "%.0f", status.gps.speed * 3.6f);
+  snprintf(buf, sizeof(buf), "%.0f", status.gps.speed);
   display->setTextSize(2);
   display->setTextColor(ST77XX_CYAN, colBg);
   display->setCursor(121 - (int16_t)(strlen(buf) * 12) / 2, 22);
@@ -143,8 +142,7 @@ void LCD::drawPage0() {
     snprintf(vbuf, sizeof(vbuf), "%c%c:%c%c",
       status.gps.Time[0], status.gps.Time[1],
       status.gps.Time[2], status.gps.Time[3]);
-  snprintf(bbuf, sizeof(bbuf), "%dmV %02d%%",
-    (int)status.battery.voltage, status.battery.percent);
+  snprintf(bbuf, sizeof(bbuf), "%02d%%", status.battery.percent);
   display->setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
   display->setCursor(2, 64);
   display->print(fbuf);
@@ -172,13 +170,13 @@ void LCD::drawPage1() {
   display->setCursor(2, 13);
   display->print(buf);
 
-  for (int n = 0; n < 5; n++) {
+  for (int n = 0; n < cnt; n++) {
     display->fillRect(0, 24 + n*11, 160, 10, ST77XX_BLACK);
     int16_t idx = fanet.getNextNeighbor(n);
     if (idx >= 0) {
-      String name = fanet.getNeighbourName(fanet.getNextNeighbor(n));
-      if (name.length() == 0) snprintf(buf, sizeof(buf), "Voisin #%d    ", n+1);
-      else snprintf(buf, sizeof(buf), "%s", name.c_str());
+      const String& name = fanet.neighbours[idx].name.substring(0, 16);
+      const float alt = fanet.neighbours[idx].altitude;
+      snprintf(buf, sizeof(buf), "%s ... alt %4dm", name.length() > 0 ? name.c_str() : "Unknown", (int)alt);
       display->setTextColor(ST77XX_CYAN, ST77XX_BLACK);
       display->setCursor(2, 25 + n*11);
       display->print(buf);
@@ -203,22 +201,27 @@ void LCD::drawPage2() {
 
   snprintf(buf, sizeof(buf), "ID: %s", fanet.getMyDevId().c_str());
   display->setTextColor(ST77XX_CYAN, ST77XX_BLACK);
-  display->setCursor(2, 25);
+  display->setCursor(2, 23);
   display->print(buf);
 
-  snprintf(buf, sizeof(buf), "Heap:%dkB", (int)(ESP.getFreeHeap() / 1024));
+  snprintf(buf, sizeof(buf), "Heap:%dkB  WiFi:%s",
+    (int)(ESP.getFreeHeap() / 1024), status.wifiAP.state == CONNECTED ? "ON" : "OFF");
   display->setTextColor(ST77XX_GREEN, ST77XX_BLACK);
-  display->setCursor(2, 37);
+  display->setCursor(2, 33);
   display->print(buf);
 
-  snprintf(buf, sizeof(buf), "WiFi: %s", status.wifiAP.state == CONNECTED ? "ON" : "OFF");
-  display->setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
-  display->setCursor(2, 49);
-  display->print(buf);
-
-  snprintf(buf, sizeof(buf), "Batt:%dmV", (int)status.battery.voltage);
+  snprintf(buf, sizeof(buf), "Batt:%dmV %02d%%",
+    (int)status.battery.voltage, status.battery.percent);
   display->setTextColor(ST77XX_RED, ST77XX_BLACK);
-  display->setCursor(2, 61);
+  display->setCursor(2, 43);
+  display->print(buf);
+
+  // Diagnostic: both raw GPS alt and geoid undulation — if Geo≈50m then
+  // the GPS reports WGS84 ellipsoidal height; true MSL = Alt - Geo.
+  snprintf(buf, sizeof(buf), "Alt:%dm Geo:%dm",
+    (int)status.gps.alt, (int)status.gps.geoidAlt);
+  display->setTextColor(0xC618, ST77XX_BLACK); // light grey
+  display->setCursor(2, 53);
   display->print(buf);
 }
 

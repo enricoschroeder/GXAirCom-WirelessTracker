@@ -3751,16 +3751,32 @@ static uint8_t battVoltageToPercent(uint16_t mV) {
     { 3400,  0 },
   };
   const uint8_t N = sizeof(curve) / sizeof(curve[0]);
-  if (mV >= curve[0].mV)     return 100;
-  if (mV <= curve[N-1].mV)   return 0;
-  for (uint8_t i = 0; i < N - 1; i++) {
-    if (mV <= curve[i].mV && mV > curve[i+1].mV) {
-      uint16_t dV   = curve[i].mV  - curve[i+1].mV;
-      uint8_t  dPct = curve[i].pct - curve[i+1].pct;
-      return curve[i+1].pct + (uint8_t)(((uint32_t)(mV - curve[i+1].mV) * dPct) / dV);
+
+  // Use battFull/battEmpty as the calibrated endpoints so the display
+  // reflects the real charge range of this specific battery/charger combo.
+  if (mV >= battFull)  return 100;
+  if (mV <= battEmpty) return 0;
+
+  // Raw lookup via linear interpolation between curve points
+  auto lookup = [&](uint16_t v) -> uint8_t {
+    if (v >= curve[0].mV)   return 100;
+    if (v <= curve[N-1].mV) return 0;
+    for (uint8_t i = 0; i < N - 1; i++) {
+      if (v <= curve[i].mV && v > curve[i+1].mV) {
+        uint16_t dV  = curve[i].mV  - curve[i+1].mV;
+        uint8_t dPct = curve[i].pct - curve[i+1].pct;
+        return curve[i+1].pct + (uint8_t)(((uint32_t)(v - curve[i+1].mV) * dPct) / dV);
+      }
     }
-  }
-  return 0;
+    return 0;
+  };
+
+  // Scale raw result so battFull → 100% and battEmpty → 0%, removing any
+  // discontinuity at the top caused by battFull sitting below curve[0].mV.
+  uint8_t raw     = lookup(mV);
+  uint8_t rawFull = lookup(battFull);
+  if (rawFull == 0) return 0;
+  return (uint8_t)min(100U, (uint32_t)raw * 100 / rawFull);
 }
 
 bool printBattVoltage(uint32_t tAct){
@@ -3857,8 +3873,8 @@ void setWifi(bool on){
     log_i("my APIP=%s",local_IP.toString().c_str());
     if((WiFi.getMode() & WIFI_MODE_STA)){
       if (setting.outputMode != eOutput::oBLE){
-        WiFi.setSleep(false); //disable power-save-mode !! will increase ping-time
-        WiFi.setTxPower(WIFI_POWER_19_5dBm); //maximum wifi-power
+        WiFi.setSleep(true);                 // modem sleep between beacons (~30-50 mA saving)
+        WiFi.setTxPower(WIFI_POWER_11dBm);   // sufficient within AP range; was 19.5 dBm
       }
     }
     status.bWifiOn = true; 
@@ -5757,6 +5773,9 @@ void powerOff(){
   if (PinLora_MOSI>= 0) pinMode(PinLora_MOSI,INPUT);
   if (PinLora_SS >= 0) pinMode(PinLora_SS,INPUT);
   if (PinLoraDI0 >= 0) pinMode(PinLoraDI0,INPUT);
+  #ifdef WIRELESS_TRACKER
+  digitalWrite(3, LOW); // cut Vext — kills GPS (UC6580) + TFT display during deep sleep
+  #endif
   esp_deep_sleep_start();
   
 
@@ -6480,7 +6499,7 @@ void taskLCD(void *pvParameters) {
   lcd.begin(PinLcd_Cs, PinLcd_Dc, PinLcd_Rst, PinLcd_Sck, PinLcd_Mosi, PinLcd_Bl);
   while (true) {
     lcd.run();
-    delay(10);
+    delay(200); // lcd.run() gates redraws to 1 s anyway; 5 polls/s is plenty
     if (bPowerOff) break;
   }
   lcd.end();
