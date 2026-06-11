@@ -456,6 +456,7 @@ void getRTCTime();
 #endif
 #ifdef AIRMODULE
 bool setupUbloxConfig(void);
+bool setupUnicoreConfig(void);
 bool setupQuectelGps(void);
 bool checkGPSBaudrates(void);
 bool checkGPSBaud(uint32_t baud);
@@ -1779,8 +1780,13 @@ void readPGXCFSentence(const char* data)
   // Do not restarts GPS  to avoid a long time beofre GPS constallation is found 
   if (!hasCustomGPSConfigSet) {
 #if defined(AIRMODULE)
+  #ifdef WIRELESS_TRACKER
+    log_i("Setup unicore GNSS");
+    setupUnicoreConfig();
+  #else
     log_i("Setup ublox");
     setupUbloxConfig();
+  #endif
 #endif
   } else {
     log_i("Skipping setup ublox");
@@ -2465,7 +2471,7 @@ void setup() {
 
     PinGPSRX = 33;  // ESP32 RX ← UC6580 GNSS_TX (GPIO33) — confirmé ksjh/HTIT-Tracker
     PinGPSTX = 34;  // ESP32 TX → UC6580 GNSS_RX (GPIO34)
-    // PinPPS = 36 non utilisé (GPIO36 = PinExtPower sur ce board)
+    PinPPS = 36;
 
     // UC6580 baud rate par défaut sur Wireless Tracker = 115200
     setting.gps.Baud = 115200;
@@ -4568,31 +4574,30 @@ bool sendCmd2NMEA(const char* s,const char* sRet){
   int pos = 0;
   pos += snprintf(&buffer[pos],MAXSTRING-pos,s);
   pos = flarmDataPort.addChecksum(buffer,MAXSTRING);
+  pos += snprintf(&buffer[pos], MAXSTRING-pos, "\r\n");
   log_i("%s",buffer);
   while(NMeaSerial.available()) NMeaSerial.read(); //clear receive buffer
   NMeaSerial.write(&buffer[0]);  
   uint32_t tstart = millis();
+  if(lLen == 0) return true; // in case we do not want to wait for a response  
   //wait for response
   pos = 0;
   buffer[pos] = 0;
   char c;
-  while((millis() - tstart) < 1000){
+  while((millis() - tstart) < 2000){
     while(NMeaSerial.available()){
       c = NMeaSerial.read();
-      //Serial.printf("%c",c);
       if (c == '$') pos = 0;
-      /*
-      if (c == '\r'){
-        Serial.println(buffer);
-      }
-      */
-      buffer[pos] = c;
-      pos++;
-      buffer[pos] = 0; //zero-termination !!
-      if (pos == lLen){
-        if (strcmp(sRet,buffer) == 0){
-          log_i("successful transmitted");
-          return true;
+      //Serial.print(c);
+      if (pos < MAXSTRING - 1) {
+        buffer[pos] = c;
+        pos++;
+        buffer[pos] = 0;
+        if (lLen > 0 && pos == lLen){
+          if (strcmp(sRet,buffer) == 0){
+            log_i("successful transmitted: %s",buffer);
+            return true;
+          }
         }
       }
     }
@@ -4836,6 +4841,90 @@ bool setupUbloxConfig(){
   return false;
 
 }
+
+bool setupUnicoreConfig(){
+  log_i("************ config GPS (Unicore) *************");
+  checkGPSBaudrates();
+  NMeaSerial.begin(setting.gps.Baud,SERIAL_8N1,PinGPSRX,PinGPSTX,false); //reinit TX-Pin, cause it is used twice
+  bool bOk = false;
+  
+  for (int i = 0;i < 3;i++){
+    if (sendCmd2NMEA("$PDTINFO,","$PDTINFO,UC")){
+      bOk = true;
+      break;
+    }
+    delay(500);
+  }
+  if (bOk == false) {
+    log_e("no response!");
+    return false;
+  } 
+  //we got response --> Unicore Chip
+  log_i("GNSS chip responded.");
+  bOk = true;
+
+  // default constellations should be fine... 
+  // if(!sendCmd2NMEA("$CFGSYS,h35055", "$OK*04")) { // Enable GPS BDS GALILEO QZSS
+  //   log_e("could not set constellations.");
+  //   bOk = false;
+  // }
+  // delay(750); // wait for reset caused by above command
+
+  // if(!sendCmd2NMEA("$CFGMSG,6,2,0", "$OK*04")) { // disable CMD ECHO
+  //   log_e("could not disable NOTICE message.");
+  //   bOk = false;
+  // }
+  // if(!sendCmd2NMEA("$CFGMSG,6,0,0", "$OK*04")) { // disable NOTICE __TXT
+  //   log_e("could not disable NOTICE message.");
+  //   bOk = false;
+  // }
+  // if(!sendCmd2NMEA("$CFGMSG,6,1,0", "$OK*04")) { // disable NOTICE __TXT
+  //   log_e("could not disable NOTICE message.");
+  //   bOk = false;
+  // }
+  
+  // Settings need to be send after each reset as they do not persist (wireless tracker has no flash for the GNSS)
+  // If you send a command that soft-resets the GNSS (such as CFGSYS) this needs to be done first as it also resets
+  // the other settings to default.
+  
+  if(!sendCmd2NMEA("$CFGMSG,0,3,0", "$OK*04")) { // disable GSV
+    log_e("could not disable GSV.");    
+    bOk = false;
+  }
+  if(!sendCmd2NMEA("$CFGMSG,0,5,0", "$OK*04")) { // disable VTG
+    log_e("could not disable VTG.");    
+    bOk = false;
+  }
+  
+  if(!sendCmd2NMEA("$CFGMSG,0,4,1", "$OK*04")) {   // enable RMC
+    log_e("could not enable RMC.");
+    bOk = false;
+  }
+  if(!sendCmd2NMEA("$CFGMSG,0,0,1", "$OK*04")) {   // enable GGA
+    log_e("could not enable GGA.");
+    bOk = false;
+  }
+  if(!sendCmd2NMEA("$CFGMSG,0,2,1", "$OK*04")) { // enable GSA
+    log_e("could not disable GSA."); 
+    bOk = false;
+  }  
+  if(!sendCmd2NMEA("$CFGGEOID,1", "$OK*04")) { // IMPORTANT: enable output of geoid height (is disabled by default)
+    log_e("could not set geoid output.");
+    bOk = false;
+  }
+
+
+  // log_i("update Baudrate to %d",GPSBAUDRATE);
+  // char chs[20];
+  // sprintf(chs,"$PMTK251,%d",GPSBAUDRATE);    
+  // sendCmd2NMEA(chs,""); //set Baudrate to 57600
+  // //clear serial buffer
+  // NMeaSerial.updateBaudRate(GPSBAUDRATE);
+  // setting.gps.Baud = GPSBAUDRATE;
+  // write_gpsBaud();
+  //delay(100); 
+  return bOk;   
+}
 #endif
 
 void getWdServiceDataFromResponse(char* pData){
@@ -4940,6 +5029,10 @@ void taskStandard(void *pvParameters){
     log_i("GPS init RX=GPIO%d TX=GPIO%d",PinGPSRX,PinGPSTX);
 
 #ifdef WIRELESS_TRACKER
+    // GNSS settings need to be send after each reset as they do not persist (wireless tracker has no flash for the GNSS)
+    if(!setupUnicoreConfig()) {
+      log_e("Could not setup unicore GNNS.");
+    }
     // UC6580 Wireless Tracker = 115200 baud, GPIO33 RX, GPIO34 TX, GPIO35 RST
     delay(1000);
     NMeaSerial.begin(115200, SERIAL_8N1, PinGPSRX, PinGPSTX, false);
@@ -5075,7 +5168,7 @@ void taskStandard(void *pvParameters){
     #ifdef AIRMODULE    
     if (command.ConfigGPS == 1){    
       bool bCheckQuectelGps = true;
-      if ((setting.boardType ==  T_BEAM) || (setting.boardType ==  T_BEAM_V07)){
+      if ((setting.boardType ==  T_BEAM) || (setting.boardType ==  T_BEAM_V07) || (setting.boardType == HELTEC_WIRELESS_TRACKER)){
         bCheckQuectelGps = false;
       }
       if (bCheckQuectelGps){
@@ -5085,7 +5178,12 @@ void taskStandard(void *pvParameters){
           esp_restart();
         }
       }
-      if (setupUbloxConfig()){
+      #ifdef WIRELESS_TRACKER // TODO make this dependent on setting.boardType, not define
+      bool bGpsConfigOk = setupUnicoreConfig();
+      #else
+      bool bGpsConfigOk = setupUbloxConfig();
+      #endif
+      if (bGpsConfigOk){
         command.ConfigGPS = 2; //setting ok
         delay(2000);
         esp_restart();
