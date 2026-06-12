@@ -170,8 +170,8 @@ uint8_t wifiCMD = 0;
 bool WebUpdateRunning = false;
 bool bPowerOff = false;
 #ifdef WIRELESS_TRACKER
-volatile uint8_t g_tft_page = 0; // page affichée (0=main, 1=voisins, 2=sys)
-// ST7789 minimal : pas de pointeur global, init et accès directs via fonctions
+volatile uint8_t g_tft_page = 0;       // displayed page (0=main, 1=neighbours, 2=sys)
+volatile uint32_t g_lcdLastActivity = 0; // millis() of last user interaction; reset by button handler
 #endif
 bool bGsmOff= false;
 
@@ -661,14 +661,18 @@ void handleEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t butto
       sButton[id].state = eventType;
       log_i("button %d clicked",id);
       #ifdef WIRELESS_TRACKER
-      if(id == 0) g_tft_page = (g_tft_page + 1) % 3; // cycler les pages TFT
+      if(id == 0){
+        bool wasAwake = (millis() - g_lcdLastActivity) < BL_DIM_MS;
+        g_lcdLastActivity = millis(); // always wake / reset backlight dim timer
+        if (wasAwake) g_tft_page = (g_tft_page + 1) % 3; // only cycle page if backlight was fully on
+      }
       #endif
       break;
     case ace_button::AceButton::kEventLongPressed:
       sButton[id].state = eventType;
       log_i("button %d long pressed",id);
       #ifdef WIRELESS_TRACKER
-      if(id == 0){ bPowerOff = true; } // extinction sur long press
+      if(id == 0){ bPowerOff = true; }
       #endif
       break;
     case ace_button::AceButton::kEventDoubleClicked:
@@ -2483,6 +2487,8 @@ void setup() {
 
     // Bouton USER
     sButton[0].PinButton = 0;
+
+    PinUserLed = 18;
 
     // GPIO35 = GNSS_RST (actif LOW)
     // Pulse reset pour démarrage propre, puis relâcher (HIGH = fonctionnement normal)
@@ -4993,7 +4999,7 @@ void taskStandard(void *pvParameters){
   #ifdef TEST
   static uint32_t tSend = millis();
   #endif
-  userled.setUserLed(PinBeaconLed,true);
+  userled.setUserLed(PinBeaconLed >= 0 ? PinBeaconLed : PinUserLed, true);
   char * pSerialLine = NULL;
   String sSerial = "";
   String s = "";
@@ -5136,17 +5142,17 @@ void taskStandard(void *pvParameters){
   while(1){    
     // put your main code here, to run repeatedly:
     uint32_t tAct = millis();
-    if ((bShowBattPower) && (bBatPowerOk)){
-      //log_i("show batt-percent");
-      userled.setBattPower(status.battery.percent);
-      userled.setState(gxUserLed::showBattPower); //blink slow 1-5 times for batt-percent 0-100percent
-      bShowBattPower = false; 
-      //log_i("show Batt ok");     
-    }else if (status.gps.Fix){
-      userled.setBlinkFast(1); //blink fast 1 times
-    }else{
-      userled.setBlinkFast(2); //blink fast 2 times
-    }
+    // if ((bShowBattPower) && (bBatPowerOk)){
+    //   //log_i("show batt-percent");
+    //   userled.setBattPower(status.battery.percent);
+    //   userled.setState(gxUserLed::showBattPower); //blink slow 1-5 times for batt-percent 0-100percent
+    //   bShowBattPower = false; 
+    //   //log_i("show Batt ok");     
+    // }else if (status.gps.Fix){
+    //   userled.setBlinkFast(1); //blink fast 1 times
+    // }else{
+    //   userled.setBlinkFast(2); //blink fast 2 times
+    // }
     #ifdef TEST
     if (timeOver(tAct,tSend,1000)){
       tSend = tSend;
@@ -5401,6 +5407,12 @@ void taskStandard(void *pvParameters){
     if (!WebUpdateRunning){
       fanet.run();
     }
+    #ifdef WIRELESS_TRACKER
+    if (!status.gps.Fix)
+      userled.setBlinkFast(1);
+    else
+      userled.setState(gxUserLed::on);
+    #endif
     userled.run();
     //status.fanetRx = fanet.rxCount;
     //status.fanetTx = fanet.txCount;

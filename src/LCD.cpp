@@ -9,14 +9,23 @@
 extern struct SettingsData setting;
 extern struct statusData status;
 extern FanetLora fanet;
-extern volatile uint8_t g_tft_page;
+extern volatile uint8_t  g_tft_page;
+extern volatile uint32_t g_lcdLastActivity;
 
 LCD::LCD() {}
 
+void LCD::setBacklight(uint8_t brightness) {
+  if (brightness == blCurrent) return;
+  blCurrent = brightness;
+  ledcWrite(BL_LEDC_CH, brightness);
+}
+
 bool LCD::begin(int8_t cs, int8_t dc, int8_t rst, int8_t clk, int8_t din, int8_t bl) {
   pinBL = bl;
-  pinMode(pinBL, OUTPUT);
-  digitalWrite(pinBL, HIGH);
+  ledcSetup(BL_LEDC_CH, 1000, 8); // 1 kHz, 8-bit (0-255)
+  ledcAttachPin(pinBL, BL_LEDC_CH);
+  g_lcdLastActivity = millis();
+  setBacklight(255);
 
   spi = new SPIClass(HSPI);
   spi->begin(clk, -1, din, -1);
@@ -52,15 +61,27 @@ void LCD::end() {
   display->print("Power Off");
   delay(1000);
   display->fillScreen(ST77XX_BLACK);
-  digitalWrite(pinBL, LOW);
+  setBacklight(0);
 }
 
 void LCD::run() {
+  uint32_t tNow = millis();
   bool pageChanged = (g_tft_page != lastPage);
-  if (!pageChanged && millis() - tLastRefresh < 1000) return;
+
+  // Backlight auto-dim / auto-off based on inactivity
+  uint32_t idle = tNow - g_lcdLastActivity;
+  if (idle >= BL_OFF_MS) {
+    setBacklight(0);
+  } else if (idle >= BL_DIM_MS) {
+    setBacklight(BL_DIM_VAL);
+  } else {
+    setBacklight(255);
+  }
+
+  if (!pageChanged && tNow - tLastRefresh < 1000) return;
 
   if (pageChanged && g_tft_page != 0) display->fillScreen(ST77XX_BLACK);
-  tLastRefresh = millis();
+  tLastRefresh = tNow;
   lastPage = g_tft_page;
 
   if      (g_tft_page == 0) drawPage0();
@@ -76,7 +97,10 @@ void LCD::drawPage0() {
   display->fillRect(0, 0, 160, 12, ST77XX_BLUE);
   display->setTextSize(1);
   display->setTextColor(ST77XX_WHITE, ST77XX_BLUE);
-  snprintf(buf, sizeof(buf), "GXAirCom %s", fanet.getMyDevId().c_str());
+  if (setting.PilotName.length() > 0)
+    snprintf(buf, sizeof(buf), "%s %.10s", fanet.getMyDevId().c_str(), setting.PilotName.c_str());
+  else
+    snprintf(buf, sizeof(buf), "%s", fanet.getMyDevId().c_str());
   display->setCursor(2, 2);
   display->print(buf);
   snprintf(buf, sizeof(buf), "%02d", status.gps.NumSat);
