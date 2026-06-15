@@ -179,9 +179,12 @@ void start_ble (String bleId)
 	// Start the service
 	pService->start();
 
-	// Start advertising
+	// Start advertising — 250-500 ms interval (units of 0.625 ms → 400/800)
+	// XCSoar/XCGuide tolerate this; default 100 ms kept the radio active 10x more often
 	NimBLEAdvertising* pAdvertising = pServer->getAdvertising();
 	pAdvertising->addServiceUUID(pService->getUUID());
+	pAdvertising->setMinInterval(400);
+	pAdvertising->setMaxInterval(800);
 	pAdvertising->start();
 
 	log_i("Waiting a client connection to notify...");

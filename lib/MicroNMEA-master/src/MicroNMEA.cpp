@@ -309,6 +309,7 @@ bool MicroNMEA::processGGA(const char *s)
 	// to indicate GPS regardless of actual navigation system used.
 	_navSystem = _talkerID;
 	s = parseTime(s);
+	//Serial.println(s);
 	// ++s;
 	_latitude = parseDegreeMinute(s, 2, &s);
 	if (*s == ',')

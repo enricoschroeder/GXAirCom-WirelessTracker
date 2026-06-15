@@ -91,172 +91,8 @@ XPowersLibInterface *PMU = NULL;
 #if defined(SSD1306) || defined(SH1106G)
 #include <oled.h>
 #endif
-// Display ST7789 : driver minimal bit-bang inline, aucune lib externe
 #ifdef WIRELESS_TRACKER
-// ============================================================
-// Driver ST7789 minimal bit-bang — aucune lib externe requise
-// Pins: CS=38 DC=40 MOSI=42 SCK=41 RST=39
-// ============================================================
-#define TFT_CS   38
-#define TFT_DC   40
-#define TFT_MOSI 42
-#define TFT_SCK  41
-#define TFT_RST  39
-#define TFT_BL   21   // backlight GPIO21 (pas 18!)
-// ST7735 MINI160x80 — offsets corrects pour Wireless Tracker V1.2
-#define TFT_XSTART 1
-#define TFT_YSTART 26
-
-// SPI bit-bang MODE0 (CPOL=0 CPHA=0) — SCK idle LOW, data sur rising edge
-static void tft_spi_byte(uint8_t b){
-  // Pas de delayMicroseconds : ESP32-S3 240MHz = ~5MHz SPI, dans specs ST7735
-  for(int i=7;i>=0;i--){
-    digitalWrite(TFT_MOSI,(b>>i)&1);
-    digitalWrite(TFT_SCK,HIGH);
-    digitalWrite(TFT_SCK,LOW);
-  }
-}
-// Envoie CMD + paramètres en UNE seule transaction CS
-static void tft_write_cmd(uint8_t cmd, const uint8_t *data=nullptr, uint8_t len=0){
-  digitalWrite(TFT_CS,LOW);
-  digitalWrite(TFT_DC,LOW);  tft_spi_byte(cmd);
-  if(data && len){
-    digitalWrite(TFT_DC,HIGH);
-    for(uint8_t i=0;i<len;i++) tft_spi_byte(data[i]);
-  }
-  digitalWrite(TFT_CS,HIGH);
-}
-static void tft_fill(uint16_t color, uint32_t count){
-  uint8_t hi=color>>8, lo=color&0xFF;
-  // RAMWR command
-  digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW);
-  tft_spi_byte(0x2C);
-  digitalWrite(TFT_DC,HIGH);
-  while(count--){ tft_spi_byte(hi); tft_spi_byte(lo); }
-  digitalWrite(TFT_CS,HIGH);
-}
-static void tft_set_window(uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1){
-  uint8_t d[4];
-  x0+=TFT_XSTART; x1+=TFT_XSTART;
-  y0+=TFT_YSTART; y1+=TFT_YSTART;
-  d[0]=x0>>8; d[1]=x0; d[2]=x1>>8; d[3]=x1;
-  tft_write_cmd(0x2A,d,4);
-  d[0]=y0>>8; d[1]=y0; d[2]=y1>>8; d[3]=y1;
-  tft_write_cmd(0x2B,d,4);
-}
-static void tft_fill_screen(uint16_t color){
-  tft_set_window(0,0,159,79); tft_fill(color,160*80);
-}
-static void tft_fill_rect(int16_t x,int16_t y,int16_t w,int16_t h,uint16_t c){
-  if(x<0){w+=x;x=0;} if(y<0){h+=y;y=0;}
-  if(x+w>160)w=160-x; if(y+h>80)h=80-y;
-  if(w<=0||h<=0) return;
-  tft_set_window(x,y,x+w-1,y+h-1); tft_fill(c,(uint32_t)w*h);
-}
-// Police 5x8 ASCII 32-127
-static const uint8_t TFT_FONT[] PROGMEM = {
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x5F,0x00,0x00,0x00,0x07,0x00,0x07,0x00,
-0x14,0x7F,0x14,0x7F,0x14,0x24,0x2A,0x7F,0x2A,0x12,0x23,0x13,0x08,0x64,0x62,
-0x36,0x49,0x56,0x20,0x50,0x00,0x08,0x07,0x03,0x00,0x00,0x1C,0x22,0x41,0x00,
-0x00,0x41,0x22,0x1C,0x00,0x2A,0x1C,0x7F,0x1C,0x2A,0x08,0x08,0x3E,0x08,0x08,
-0x00,0x80,0x70,0x30,0x00,0x08,0x08,0x08,0x08,0x08,0x00,0x00,0x60,0x60,0x00,
-0x20,0x10,0x08,0x04,0x02,0x3E,0x51,0x49,0x45,0x3E,0x00,0x42,0x7F,0x40,0x00,
-0x72,0x49,0x49,0x49,0x46,0x21,0x41,0x49,0x4D,0x33,0x18,0x14,0x12,0x7F,0x10,
-0x27,0x45,0x45,0x45,0x39,0x3C,0x4A,0x49,0x49,0x31,0x41,0x21,0x11,0x09,0x07,
-0x36,0x49,0x49,0x49,0x36,0x46,0x49,0x49,0x29,0x1E,0x00,0x00,0x14,0x00,0x00,
-0x00,0x40,0x34,0x00,0x00,0x00,0x08,0x14,0x22,0x41,0x14,0x14,0x14,0x14,0x14,
-0x00,0x41,0x22,0x14,0x08,0x02,0x01,0x59,0x09,0x06,0x3E,0x41,0x5D,0x59,0x4E,
-0x7C,0x12,0x11,0x12,0x7C,0x7F,0x49,0x49,0x49,0x36,0x3E,0x41,0x41,0x41,0x22,
-0x7F,0x41,0x41,0x41,0x3E,0x7F,0x49,0x49,0x49,0x41,0x7F,0x09,0x09,0x09,0x01,
-0x3E,0x41,0x41,0x51,0x73,0x7F,0x08,0x08,0x08,0x7F,0x00,0x41,0x7F,0x41,0x00,
-0x20,0x40,0x41,0x3F,0x01,0x7F,0x08,0x14,0x22,0x41,0x7F,0x40,0x40,0x40,0x40,
-0x7F,0x02,0x1C,0x02,0x7F,0x7F,0x04,0x08,0x10,0x7F,0x3E,0x41,0x41,0x41,0x3E,
-0x7F,0x09,0x09,0x09,0x06,0x3E,0x41,0x51,0x21,0x5E,0x7F,0x09,0x19,0x29,0x46,
-0x26,0x49,0x49,0x49,0x32,0x03,0x01,0x7F,0x01,0x03,0x3F,0x40,0x40,0x40,0x3F,
-0x1F,0x20,0x40,0x20,0x1F,0x3F,0x40,0x38,0x40,0x3F,0x63,0x14,0x08,0x14,0x63,
-0x03,0x04,0x78,0x04,0x03,0x61,0x59,0x49,0x4D,0x43,0x00,0x7F,0x41,0x41,0x41,
-0x02,0x04,0x08,0x10,0x20,0x00,0x41,0x41,0x41,0x7F,0x04,0x02,0x01,0x02,0x04,
-0x40,0x40,0x40,0x40,0x40,0x00,0x03,0x07,0x08,0x00,0x20,0x54,0x54,0x78,0x40,
-0x7F,0x28,0x44,0x44,0x38,0x38,0x44,0x44,0x44,0x28,0x38,0x44,0x44,0x28,0x7F,
-0x38,0x54,0x54,0x54,0x18,0x00,0x08,0x7E,0x09,0x02,0x18,0xA4,0xA4,0x9C,0x78,
-0x7F,0x08,0x04,0x04,0x78,0x00,0x44,0x7D,0x40,0x00,0x20,0x40,0x40,0x3D,0x00,
-0x7F,0x10,0x28,0x44,0x00,0x00,0x41,0x7F,0x40,0x00,0x7C,0x04,0x78,0x04,0x78,
-0x7C,0x08,0x04,0x04,0x78,0x38,0x44,0x44,0x44,0x38,0xFC,0x18,0x24,0x24,0x18,
-0x18,0x24,0x24,0x18,0xFC,0x7C,0x08,0x04,0x04,0x08,0x48,0x54,0x54,0x54,0x24,
-0x04,0x04,0x3F,0x44,0x24,0x3C,0x40,0x40,0x20,0x7C,0x1C,0x20,0x40,0x20,0x1C,
-0x3C,0x40,0x30,0x40,0x3C,0x44,0x28,0x10,0x28,0x44,0x4C,0x90,0x90,0x90,0x7C,
-0x44,0x64,0x54,0x4C,0x44,0x00,0x08,0x36,0x41,0x00,0x00,0x00,0x77,0x00,0x00,
-0x00,0x41,0x36,0x08,0x00,0x02,0x01,0x02,0x04,0x02};
-
-static void tft_draw_str(int16_t x, int16_t y, const char* s, uint16_t fg, uint16_t bg) {
-  int len = strlen(s);
-  if(len==0) return;
-  uint8_t fgh=fg>>8,fgl=fg&0xFF,bgh=bg>>8,bgl=bg&0xFF;
-  for(int row=0;row<8;row++){
-    tft_set_window(x,y+row,x+len*6-1,y+row);
-    digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW); tft_spi_byte(0x2C);
-    digitalWrite(TFT_DC,HIGH);
-    for(int i=0;i<len;i++){
-      uint8_t c=(uint8_t)s[i]; if(c<32||c>126)c=32;
-      for(int col=0;col<5;col++){
-        uint8_t bits=pgm_read_byte(TFT_FONT+(c-32)*5+col);
-        uint8_t on=(bits>>row)&1;
-        tft_spi_byte(on?fgh:bgh); tft_spi_byte(on?fgl:bgl);
-      }
-      tft_spi_byte(bgh); tft_spi_byte(bgl);
-    }
-    digitalWrite(TFT_CS,HIGH);
-  }
-}
-static void tft_draw_str2(int16_t x, int16_t y, const char* s, uint16_t fg, uint16_t bg){
-  int len = strlen(s);
-  if(len==0) return;
-  uint8_t fgh=fg>>8,fgl=fg&0xFF,bgh=bg>>8,bgl=bg&0xFF;
-  for(int row=0;row<8;row++){
-    for(int sr=0;sr<2;sr++){
-      tft_set_window(x,y+row*2+sr,x+len*12-1,y+row*2+sr);
-      digitalWrite(TFT_CS,LOW); digitalWrite(TFT_DC,LOW); tft_spi_byte(0x2C);
-      digitalWrite(TFT_DC,HIGH);
-      for(int i=0;i<len;i++){
-        uint8_t c=(uint8_t)s[i]; if(c<32||c>126)c=32;
-        for(int col=0;col<5;col++){
-          uint8_t bits=pgm_read_byte(TFT_FONT+(c-32)*5+col);
-          uint8_t on=(bits>>row)&1;
-          tft_spi_byte(on?fgh:bgh); tft_spi_byte(on?fgl:bgl);
-          tft_spi_byte(on?fgh:bgh); tft_spi_byte(on?fgl:bgl);
-        }
-        tft_spi_byte(bgh); tft_spi_byte(bgl);
-        tft_spi_byte(bgh); tft_spi_byte(bgl);
-      }
-      digitalWrite(TFT_CS,HIGH);
-    }
-  }
-}
-static void tft_draw_str2c(int16_t cx, int16_t y, const char* s, uint16_t fg, uint16_t bg){
-  int16_t w = strlen(s)*12;
-  tft_draw_str2(cx - w/2, y, s, fg, bg);
-}
-static void tft_init(){
-  pinMode(TFT_CS,OUTPUT);   digitalWrite(TFT_CS,HIGH);
-  pinMode(TFT_DC,OUTPUT);   digitalWrite(TFT_DC,HIGH);
-  pinMode(TFT_MOSI,OUTPUT); digitalWrite(TFT_MOSI,LOW);
-  pinMode(TFT_SCK,OUTPUT);  digitalWrite(TFT_SCK,LOW); // MODE0: SCK idle LOW
-  pinMode(TFT_RST,OUTPUT);
-  // Backlight
-  pinMode(TFT_BL,OUTPUT); digitalWrite(TFT_BL,HIGH);
-  // Hard reset
-  digitalWrite(TFT_RST,HIGH); delay(50);
-  digitalWrite(TFT_RST,LOW);  delay(100);
-  digitalWrite(TFT_RST,HIGH); delay(200);
-  // Init
-  uint8_t d[4];
-  tft_write_cmd(0x01);      delay(150); // SWRESET
-  tft_write_cmd(0x11);      delay(500); // SLPOUT
-  d[0]=0x05; tft_write_cmd(0x3A,d,1); delay(10); // COLMOD 16bit ST7735
-  d[0]=0x68; tft_write_cmd(0x36,d,1); // MADCTL rot=1 (MX|MV|BGR) landscape
-  tft_write_cmd(0x21);      delay(10); // INVON requis sur ce display
-  tft_write_cmd(0x29);      delay(10); // DISPON
-}
+#include "LCD.h"
 #endif // WIRELESS_TRACKER
 
 
@@ -334,8 +170,8 @@ uint8_t wifiCMD = 0;
 bool WebUpdateRunning = false;
 bool bPowerOff = false;
 #ifdef WIRELESS_TRACKER
-volatile uint8_t g_tft_page = 0; // page affichée (0=main, 1=voisins, 2=sys)
-// ST7789 minimal : pas de pointeur global, init et accès directs via fonctions
+volatile uint8_t g_tft_page = 0;       // displayed page (0=main, 1=neighbours, 2=sys)
+volatile uint32_t g_lcdLastActivity = 0; // millis() of last user interaction; reset by button handler
 #endif
 bool bGsmOff= false;
 
@@ -417,6 +253,14 @@ int8_t PinEink_Dc     =  32;
 int8_t PinEink_Cs     =  15;
 int8_t PinEink_Clk    =  4;
 int8_t PinEink_Din    =  2;
+
+//lcd
+int8_t PinLcd_Cs   = -1;
+int8_t PinLcd_Dc   = -1;
+int8_t PinLcd_Rst  = -1;
+int8_t PinLcd_Sck  = -1;
+int8_t PinLcd_Mosi = -1;
+int8_t PinLcd_Bl   = -1;
 
 
 //LED
@@ -540,7 +384,7 @@ void taskEInk(void *pvParameters);
 void taskOled(void *pvParameters);
 #endif
 #ifdef WIRELESS_TRACKER
-void taskTFT(void *pvParameters);
+void taskLCD(void *pvParameters);
 #endif
 #ifdef FLARMLOGGER
 SemaphoreHandle_t FlarmLogQueue = nullptr;
@@ -612,6 +456,7 @@ void getRTCTime();
 #endif
 #ifdef AIRMODULE
 bool setupUbloxConfig(void);
+bool setupUnicoreConfig(void);
 bool setupQuectelGps(void);
 bool checkGPSBaudrates(void);
 bool checkGPSBaud(uint32_t baud);
@@ -816,14 +661,18 @@ void handleEvent(ace_button::AceButton* button, uint8_t eventType, uint8_t butto
       sButton[id].state = eventType;
       log_i("button %d clicked",id);
       #ifdef WIRELESS_TRACKER
-      if(id == 0) g_tft_page = (g_tft_page + 1) % 3; // cycler les pages TFT
+      if(id == 0){
+        bool wasAwake = (millis() - g_lcdLastActivity) < BL_DIM_MS;
+        g_lcdLastActivity = millis(); // always wake / reset backlight dim timer
+        if (wasAwake) g_tft_page = (g_tft_page + 1) % 3; // only cycle page if backlight was fully on
+      }
       #endif
       break;
     case ace_button::AceButton::kEventLongPressed:
       sButton[id].state = eventType;
       log_i("button %d long pressed",id);
       #ifdef WIRELESS_TRACKER
-      if(id == 0){ bPowerOff = true; } // extinction sur long press
+      if(id == 0){ bPowerOff = true; }
       #endif
       break;
     case ace_button::AceButton::kEventDoubleClicked:
@@ -1935,8 +1784,13 @@ void readPGXCFSentence(const char* data)
   // Do not restarts GPS  to avoid a long time beofre GPS constallation is found 
   if (!hasCustomGPSConfigSet) {
 #if defined(AIRMODULE)
+  #ifdef WIRELESS_TRACKER
+    log_i("Setup unicore GNSS");
+    setupUnicoreConfig();
+  #else
     log_i("Setup ublox");
     setupUbloxConfig();
+  #endif
 #endif
   } else {
     log_i("Skipping setup ublox");
@@ -2621,7 +2475,7 @@ void setup() {
 
     PinGPSRX = 33;  // ESP32 RX ← UC6580 GNSS_TX (GPIO33) — confirmé ksjh/HTIT-Tracker
     PinGPSTX = 34;  // ESP32 TX → UC6580 GNSS_RX (GPIO34)
-    // PinPPS = 36 non utilisé (GPIO36 = PinExtPower sur ce board)
+    PinPPS = 36;
 
     // UC6580 baud rate par défaut sur Wireless Tracker = 115200
     setting.gps.Baud = 115200;
@@ -2634,6 +2488,8 @@ void setup() {
     // Bouton USER
     sButton[0].PinButton = 0;
 
+    PinUserLed = 18;
+
     // GPIO35 = GNSS_RST (actif LOW)
     // Pulse reset pour démarrage propre, puis relâcher (HIGH = fonctionnement normal)
     pinMode(35, OUTPUT);
@@ -2644,15 +2500,18 @@ void setup() {
 
     // Batterie ADC (même circuit que V3/V4 : R13=390K, R14=100K)
     PinExtPower       = 36;  // Contrôle mesure tension ext
-    PinADCCtrl        = 37;  // Enable ADC
+    PinADCCtrl        = 2;   // VBAT_CTRL — HIGH enables voltage divider
     PinADCVoltage     = 1;   // ADC pin
     adcVoltageMultiplier = 5.2636f;
 
-    // Display ST7789 0.96" 160x80 — init dans setup() pour éviter problème FreeRTOS SPI
-    pinMode(18, OUTPUT);
-    digitalWrite(18, HIGH);  // backlight ON
-    setting.displayType = NO_DISPLAY;
-    // TFT init déplacé dans taskTFT
+    // LCD ST7735 0.96" 160x80
+    PinLcd_Cs   = 38;
+    PinLcd_Dc   = 40;
+    PinLcd_Rst  = 39;
+    PinLcd_Sck  = 41;
+    PinLcd_Mosi = 42;
+    PinLcd_Bl   = 21;
+    setting.displayType = TFT_ST7789;
 
     break;
 
@@ -2709,7 +2568,10 @@ void setup() {
   }
   if (PinADCCtrl >= 0){
     pinMode(PinADCCtrl, OUTPUT); //we have to set pin to measure voltage of Battery
-    digitalWrite(PinADCCtrl,LOW); //set output to Low, so we can measure the voltage  
+    if (setting.boardType == eBoard::HELTEC_WIRELESS_TRACKER)
+      digitalWrite(PinADCCtrl,INPUT_PULLUP); //needs to be INPUT_PULLUP for wireless tracker
+    else
+      digitalWrite(PinADCCtrl,LOW); //set output to Low, so we can measure the voltage  
     log_i("set adcCtrl"); 
     delay(100); 
   }
@@ -2773,7 +2635,7 @@ xOutputMutex = xSemaphoreCreateMutex();
 xTaskCreatePinnedToCore(taskOled, "taskOled", 6500, NULL, 8, &xHandleOled, ARDUINO_RUNNING_CORE1); //background Oled
 #endif
 #ifdef WIRELESS_TRACKER
-xTaskCreatePinnedToCore(taskTFT, "taskTFT", 6500, NULL, 6, &xHandleTFT, ARDUINO_RUNNING_CORE1); //ST7789 TFT
+xTaskCreatePinnedToCore(taskLCD, "taskLCD", 6500, NULL, 6, &xHandleTFT, ARDUINO_RUNNING_CORE1); //ST7789 TFT
 #endif
   xTaskCreatePinnedToCore(taskBackGround, "taskBackGround", 6500, NULL, 5, &xHandleBackground, ARDUINO_RUNNING_CORE1); //background task
   #ifdef BLUETOOTH
@@ -3889,6 +3751,46 @@ float readBattvoltage(){
   return vBatt;
 }
 
+// Non-linear voltage → SOC mapping for a single-cell 3.7V Li-Ion.
+// Points derived from a typical constant-current discharge curve.
+// Linear interpolation is used between adjacent points.
+static uint8_t battVoltageToPercent(uint16_t mV) {
+  static const struct { uint16_t mV; uint8_t pct; } curve[] = {
+    { 4200, 100 }, { 4150, 97 }, { 4100, 93 }, { 4050, 89 },
+    { 4000, 83 },  { 3950, 76 }, { 3900, 68 }, { 3850, 60 },
+    { 3800, 52 },  { 3750, 44 }, { 3700, 36 }, { 3650, 27 },
+    { 3600, 19 },  { 3550, 12 }, { 3500,  6 }, { 3450,  2 },
+    { 3400,  0 },
+  };
+  const uint8_t N = sizeof(curve) / sizeof(curve[0]);
+
+  // Use battFull/battEmpty as the calibrated endpoints so the display
+  // reflects the real charge range of this specific battery/charger combo.
+  if (mV >= battFull)  return 100;
+  if (mV <= battEmpty) return 0;
+
+  // Raw lookup via linear interpolation between curve points
+  auto lookup = [&](uint16_t v) -> uint8_t {
+    if (v >= curve[0].mV)   return 100;
+    if (v <= curve[N-1].mV) return 0;
+    for (uint8_t i = 0; i < N - 1; i++) {
+      if (v <= curve[i].mV && v > curve[i+1].mV) {
+        uint16_t dV  = curve[i].mV  - curve[i+1].mV;
+        uint8_t dPct = curve[i].pct - curve[i+1].pct;
+        return curve[i+1].pct + (uint8_t)(((uint32_t)(v - curve[i+1].mV) * dPct) / dV);
+      }
+    }
+    return 0;
+  };
+
+  // Scale raw result so battFull → 100% and battEmpty → 0%, removing any
+  // discontinuity at the top caused by battFull sitting below curve[0].mV.
+  uint8_t raw     = lookup(mV);
+  uint8_t rawFull = lookup(battFull);
+  if (rawFull == 0) return 0;
+  return (uint8_t)min(100U, (uint32_t)raw * 100 / rawFull);
+}
+
 bool printBattVoltage(uint32_t tAct){
   static uint32_t tBatt = millis() - 5000;
   if ((tAct - tBatt) >= 5000){
@@ -3903,7 +3805,7 @@ bool printBattVoltage(uint32_t tAct){
       status.battery.voltage = uint16_t(readBattvoltage()*1000);      
     }
     //log_i("Batt =%dV",status.battery.voltage);
-    status.battery.percent = scale(status.battery.voltage,battEmpty,battFull,0,100);
+    status.battery.percent = battVoltageToPercent(status.battery.voltage);
     //log_i("Batt =%d%%",status.battery.percent);
     //log_i("Batt %dV; %d%%",status.battery.voltage,status.battery.percent);
 
@@ -3983,8 +3885,8 @@ void setWifi(bool on){
     log_i("my APIP=%s",local_IP.toString().c_str());
     if((WiFi.getMode() & WIFI_MODE_STA)){
       if (setting.outputMode != eOutput::oBLE){
-        WiFi.setSleep(false); //disable power-save-mode !! will increase ping-time
-        WiFi.setTxPower(WIFI_POWER_19_5dBm); //maximum wifi-power
+        WiFi.setSleep(true);                 // modem sleep between beacons (~30-50 mA saving)
+        WiFi.setTxPower(WIFI_POWER_11dBm);   // sufficient within AP range; was 19.5 dBm
       }
     }
     status.bWifiOn = true; 
@@ -4678,31 +4580,30 @@ bool sendCmd2NMEA(const char* s,const char* sRet){
   int pos = 0;
   pos += snprintf(&buffer[pos],MAXSTRING-pos,s);
   pos = flarmDataPort.addChecksum(buffer,MAXSTRING);
+  pos += snprintf(&buffer[pos], MAXSTRING-pos, "\r\n");
   log_i("%s",buffer);
   while(NMeaSerial.available()) NMeaSerial.read(); //clear receive buffer
   NMeaSerial.write(&buffer[0]);  
   uint32_t tstart = millis();
+  if(lLen == 0) return true; // in case we do not want to wait for a response  
   //wait for response
   pos = 0;
   buffer[pos] = 0;
   char c;
-  while((millis() - tstart) < 1000){
+  while((millis() - tstart) < 2000){
     while(NMeaSerial.available()){
       c = NMeaSerial.read();
-      //Serial.printf("%c",c);
       if (c == '$') pos = 0;
-      /*
-      if (c == '\r'){
-        Serial.println(buffer);
-      }
-      */
-      buffer[pos] = c;
-      pos++;
-      buffer[pos] = 0; //zero-termination !!
-      if (pos == lLen){
-        if (strcmp(sRet,buffer) == 0){
-          log_i("successful transmitted");
-          return true;
+      //Serial.print(c);
+      if (pos < MAXSTRING - 1) {
+        buffer[pos] = c;
+        pos++;
+        buffer[pos] = 0;
+        if (lLen > 0 && pos == lLen){
+          if (strcmp(sRet,buffer) == 0){
+            log_i("successful transmitted: %s",buffer);
+            return true;
+          }
         }
       }
     }
@@ -4946,6 +4847,90 @@ bool setupUbloxConfig(){
   return false;
 
 }
+
+bool setupUnicoreConfig(){
+  log_i("************ config GPS (Unicore) *************");
+  checkGPSBaudrates();
+  NMeaSerial.begin(setting.gps.Baud,SERIAL_8N1,PinGPSRX,PinGPSTX,false); //reinit TX-Pin, cause it is used twice
+  bool bOk = false;
+  
+  for (int i = 0;i < 3;i++){
+    if (sendCmd2NMEA("$PDTINFO,","$PDTINFO,UC")){
+      bOk = true;
+      break;
+    }
+    delay(500);
+  }
+  if (bOk == false) {
+    log_e("no response!");
+    return false;
+  } 
+  //we got response --> Unicore Chip
+  log_i("GNSS chip responded.");
+  bOk = true;
+
+  // default constellations should be fine... 
+  // if(!sendCmd2NMEA("$CFGSYS,h35055", "$OK*04")) { // Enable GPS BDS GALILEO QZSS
+  //   log_e("could not set constellations.");
+  //   bOk = false;
+  // }
+  // delay(750); // wait for reset caused by above command
+
+  // if(!sendCmd2NMEA("$CFGMSG,6,2,0", "$OK*04")) { // disable CMD ECHO
+  //   log_e("could not disable NOTICE message.");
+  //   bOk = false;
+  // }
+  // if(!sendCmd2NMEA("$CFGMSG,6,0,0", "$OK*04")) { // disable NOTICE __TXT
+  //   log_e("could not disable NOTICE message.");
+  //   bOk = false;
+  // }
+  // if(!sendCmd2NMEA("$CFGMSG,6,1,0", "$OK*04")) { // disable NOTICE __TXT
+  //   log_e("could not disable NOTICE message.");
+  //   bOk = false;
+  // }
+  
+  // Settings need to be send after each reset as they do not persist (wireless tracker has no flash for the GNSS)
+  // If you send a command that soft-resets the GNSS (such as CFGSYS) this needs to be done first as it also resets
+  // the other settings to default.
+  
+  if(!sendCmd2NMEA("$CFGMSG,0,3,0", "$OK*04")) { // disable GSV
+    log_e("could not disable GSV.");    
+    bOk = false;
+  }
+  if(!sendCmd2NMEA("$CFGMSG,0,5,0", "$OK*04")) { // disable VTG
+    log_e("could not disable VTG.");    
+    bOk = false;
+  }
+  
+  if(!sendCmd2NMEA("$CFGMSG,0,4,1", "$OK*04")) {   // enable RMC
+    log_e("could not enable RMC.");
+    bOk = false;
+  }
+  if(!sendCmd2NMEA("$CFGMSG,0,0,1", "$OK*04")) {   // enable GGA
+    log_e("could not enable GGA.");
+    bOk = false;
+  }
+  if(!sendCmd2NMEA("$CFGMSG,0,2,1", "$OK*04")) { // enable GSA
+    log_e("could not disable GSA."); 
+    bOk = false;
+  }  
+  if(!sendCmd2NMEA("$CFGGEOID,1", "$OK*04")) { // IMPORTANT: enable output of geoid height (is disabled by default)
+    log_e("could not set geoid output.");
+    bOk = false;
+  }
+
+
+  // log_i("update Baudrate to %d",GPSBAUDRATE);
+  // char chs[20];
+  // sprintf(chs,"$PMTK251,%d",GPSBAUDRATE);    
+  // sendCmd2NMEA(chs,""); //set Baudrate to 57600
+  // //clear serial buffer
+  // NMeaSerial.updateBaudRate(GPSBAUDRATE);
+  // setting.gps.Baud = GPSBAUDRATE;
+  // write_gpsBaud();
+  //delay(100); 
+  return bOk;   
+}
 #endif
 
 void getWdServiceDataFromResponse(char* pData){
@@ -5014,7 +4999,7 @@ void taskStandard(void *pvParameters){
   #ifdef TEST
   static uint32_t tSend = millis();
   #endif
-  userled.setUserLed(PinBeaconLed,true);
+  userled.setUserLed(PinBeaconLed >= 0 ? PinBeaconLed : PinUserLed, true);
   char * pSerialLine = NULL;
   String sSerial = "";
   String s = "";
@@ -5050,6 +5035,10 @@ void taskStandard(void *pvParameters){
     log_i("GPS init RX=GPIO%d TX=GPIO%d",PinGPSRX,PinGPSTX);
 
 #ifdef WIRELESS_TRACKER
+    // GNSS settings need to be send after each reset as they do not persist (wireless tracker has no flash for the GNSS)
+    if(!setupUnicoreConfig()) {
+      log_e("Could not setup unicore GNNS.");
+    }
     // UC6580 Wireless Tracker = 115200 baud, GPIO33 RX, GPIO34 TX, GPIO35 RST
     delay(1000);
     NMeaSerial.begin(115200, SERIAL_8N1, PinGPSRX, PinGPSTX, false);
@@ -5153,17 +5142,17 @@ void taskStandard(void *pvParameters){
   while(1){    
     // put your main code here, to run repeatedly:
     uint32_t tAct = millis();
-    if ((bShowBattPower) && (bBatPowerOk)){
-      //log_i("show batt-percent");
-      userled.setBattPower(status.battery.percent);
-      userled.setState(gxUserLed::showBattPower); //blink slow 1-5 times for batt-percent 0-100percent
-      bShowBattPower = false; 
-      //log_i("show Batt ok");     
-    }else if (status.gps.Fix){
-      userled.setBlinkFast(1); //blink fast 1 times
-    }else{
-      userled.setBlinkFast(2); //blink fast 2 times
-    }
+    // if ((bShowBattPower) && (bBatPowerOk)){
+    //   //log_i("show batt-percent");
+    //   userled.setBattPower(status.battery.percent);
+    //   userled.setState(gxUserLed::showBattPower); //blink slow 1-5 times for batt-percent 0-100percent
+    //   bShowBattPower = false; 
+    //   //log_i("show Batt ok");     
+    // }else if (status.gps.Fix){
+    //   userled.setBlinkFast(1); //blink fast 1 times
+    // }else{
+    //   userled.setBlinkFast(2); //blink fast 2 times
+    // }
     #ifdef TEST
     if (timeOver(tAct,tSend,1000)){
       tSend = tSend;
@@ -5185,7 +5174,7 @@ void taskStandard(void *pvParameters){
     #ifdef AIRMODULE    
     if (command.ConfigGPS == 1){    
       bool bCheckQuectelGps = true;
-      if ((setting.boardType ==  T_BEAM) || (setting.boardType ==  T_BEAM_V07)){
+      if ((setting.boardType ==  T_BEAM) || (setting.boardType ==  T_BEAM_V07) || (setting.boardType == HELTEC_WIRELESS_TRACKER)){
         bCheckQuectelGps = false;
       }
       if (bCheckQuectelGps){
@@ -5195,7 +5184,12 @@ void taskStandard(void *pvParameters){
           esp_restart();
         }
       }
-      if (setupUbloxConfig()){
+      #ifdef WIRELESS_TRACKER // TODO make this dependent on setting.boardType, not define
+      bool bGpsConfigOk = setupUnicoreConfig();
+      #else
+      bool bGpsConfigOk = setupUbloxConfig();
+      #endif
+      if (bGpsConfigOk){
         command.ConfigGPS = 2; //setting ok
         delay(2000);
         esp_restart();
@@ -5413,6 +5407,12 @@ void taskStandard(void *pvParameters){
     if (!WebUpdateRunning){
       fanet.run();
     }
+    #ifdef WIRELESS_TRACKER
+    if (!status.gps.Fix)
+      userled.setBlinkFast(1);
+    else
+      userled.setState(gxUserLed::on);
+    #endif
     userled.run();
     //status.fanetRx = fanet.rxCount;
     //status.fanetTx = fanet.txCount;
@@ -5883,6 +5883,9 @@ void powerOff(){
   if (PinLora_MOSI>= 0) pinMode(PinLora_MOSI,INPUT);
   if (PinLora_SS >= 0) pinMode(PinLora_SS,INPUT);
   if (PinLoraDI0 >= 0) pinMode(PinLoraDI0,INPUT);
+  #ifdef WIRELESS_TRACKER
+  digitalWrite(3, LOW); // cut Vext — kills GPS (UC6580) + TFT display during deep sleep
+  #endif
   esp_deep_sleep_start();
   
 
@@ -6599,142 +6602,18 @@ void taskBackGround(void *pvParameters){
 	}
 }
 
-// ============================================================
-// taskTFT — Affichage ST7789 0.96" 160x80 — Wireless Tracker
-// SPI bus HSPI (séparé du LoRa qui utilise FSPI)
-// Pins: SCK=41 MOSI=42 CS=38 DC=40 RST=39 LEDA=18
-// ============================================================
 #ifdef WIRELESS_TRACKER
-void taskTFT(void *pvParameters) {
-  log_i("taskTFT: start");
-  // Init display ici (pas dans setup pour eviter watchdog)
-  tft_init();
-  log_i("taskTFT: TFT init OK");
-
-  // Splash screen GXAirCom
-  tft_fill_screen(0x0000);
-  tft_fill_rect(0,25,160,30,0x001F);
-  tft_draw_str(20,28,"GXAirCom",0xFFFF,0x001F);
-  tft_draw_str(10,40,"Wireless Tracker",0x07FF,0x001F);
-  delay(2000);
-  tft_fill_screen(0x0000);
-
-  uint32_t tLastRefresh = 0;
-  uint8_t lastPage = 255;
-  char buf[32];
-
+void taskLCD(void *pvParameters) {
+  log_i("taskLCD: start");
+  LCD lcd;
+  lcd.begin(PinLcd_Cs, PinLcd_Dc, PinLcd_Rst, PinLcd_Sck, PinLcd_Mosi, PinLcd_Bl);
   while (true) {
-    // Power off sur long press
-    if (bPowerOff) {
-      tft_fill_screen(0x0000);
-      tft_fill_rect(30,30,100,20,0xF800);
-      tft_draw_str(35,33,"Power Off",0xFFFF,0xF800);
-      delay(1000);
-      tft_fill_screen(0x0000);
-      digitalWrite(TFT_BL, LOW);
-      esp_deep_sleep_start();
-    }
-
-    bool pageChanged = (g_tft_page != lastPage);
-    if (!pageChanged && millis() - tLastRefresh < 1000) { delay(50); continue; }
-    tLastRefresh = millis();
-    lastPage = g_tft_page;
-
-    // ---- PAGE 0 : Dashboard 2 colonnes (Option B) ----
-    if (g_tft_page == 0) {
-      // === Header (y=0-11) bleu : GXAirCom + DevID + sats ===
-      tft_fill_rect(0,0,160,12,0x001F);
-      snprintf(buf,sizeof(buf),"GXAirCom %s",fanet.getMyDevId().c_str());
-      tft_draw_str(2,2,buf,0xFFFF,0x001F);
-      snprintf(buf,sizeof(buf),"%d",status.gps.NumSat);
-      tft_fill_rect(150,1,10,10, status.gps.NumSat>3 ? 0x07E0 : 0xF800); // point vert/rouge
-      tft_draw_str(151,2,buf,0xFFFF, status.gps.NumSat>3 ? 0x07E0 : 0xF800);
-
-      // === 2 colonnes (y=13-50) ===
-      // Séparateur vertical
-      tft_fill_rect(78,12,4,40,0x2104); // gris foncé
-
-      // Colonne gauche : ALTITUDE
-      tft_fill_rect(0,12,78,40,0x0841); // fond très sombre
-      tft_draw_str(2,14,"ALT",0x8410,0x0841);
-      snprintf(buf,sizeof(buf),"%d",(int)status.gps.alt);
-      tft_draw_str2c(38,22,buf,0xFFFF,0x0841); // centré sur x=38
-      tft_draw_str(60,44,"m",0x8410,0x0841);
-
-      // Colonne droite : VITESSE
-      tft_fill_rect(82,12,78,40,0x0841);
-      tft_draw_str(84,14,"VIT",0x8410,0x0841);
-      snprintf(buf,sizeof(buf),"%.0f",status.gps.speed*3.6f);
-      tft_draw_str2c(121,22,buf,0x07FF,0x0841); // cyan
-      tft_draw_str(84,44,"km/h",0x8410,0x0841);
-
-      // === GPS coords (y=52-61) ===
-      tft_fill_rect(0,52,160,10,0x0000);
-      if(status.gps.bHasGPS && status.gps.NumSat>0){
-        snprintf(buf,sizeof(buf),"%.4fN  %.4fE",status.gps.Lat,status.gps.Lon);
-        tft_draw_str(2,53,buf,0x07E0,0x0000);
-      } else {
-        tft_draw_str(2,53,"GPS: pas de fix       ",0xF800,0x0000);
-      }
-
-      // === Footer (y=63-71) : FANET + vario + batt ===
-      tft_fill_rect(0,63,160,10,0x0000);
-      char vbuf[12], fbuf[12], bbuf[16];
-      snprintf(fbuf,sizeof(fbuf),"F:%d",(int)fanet.getNeighboursCount());
-      snprintf(vbuf,sizeof(vbuf),"  -- ");
-      if(strlen(status.gps.Time)==6)
-        snprintf(vbuf,sizeof(vbuf),"%c%c:%c%c",
-          status.gps.Time[0],status.gps.Time[1],
-          status.gps.Time[2],status.gps.Time[3]);
-      snprintf(bbuf,sizeof(bbuf),"%dmV",(int)status.battery.voltage);
-      tft_draw_str(2,64,fbuf,0xFFE0,0x0000);
-      tft_draw_str(50,64,vbuf,0xFFFF,0x0000);
-      tft_draw_str(110,64,bbuf,0xF800,0x0000);
-    }
-
-    // ---- PAGE 1 : Voisins FANET ----
-    else if (g_tft_page == 1) {
-      if(pageChanged) tft_fill_screen(0x0000);
-      tft_fill_rect(0,0,160,11,0x07E0);
-      tft_draw_str(2,2,"Voisins FANET   ",0x0000,0x07E0);
-      uint8_t cnt = fanet.getNeighboursCount();
-      snprintf(buf,sizeof(buf),"Total: %d         ",cnt);
-      tft_fill_rect(0,12,160,10,0x0000);
-      tft_draw_str(2,13,buf,0xFFFF,0x0000);
-      // Afficher les 5 premiers voisins
-      for(int n=0;n<5;n++){
-        tft_fill_rect(0,24+n*11,160,10,0x0000);
-        int16_t idx = fanet.getNextNeighbor(n);
-        if(idx >= 0){
-          String name = fanet.getNeighbourName(fanet.getNextNeighbor(n));
-          if(name.length()==0) snprintf(buf,sizeof(buf),"Voisin #%d    ",n+1);
-          else snprintf(buf,sizeof(buf),"%s",name.c_str());
-          tft_draw_str(2,25+n*11,buf,0x07FF,0x0000);
-        }
-      }
-    }
-
-    // ---- PAGE 2 : Infos système ----
-    else if (g_tft_page == 2) {
-      if(pageChanged) tft_fill_screen(0x0000);
-      tft_fill_rect(0,0,160,11,0xFFE0);
-      tft_draw_str(2,2,"Systeme         ",0x0000,0xFFE0);
-      tft_fill_rect(0,12,160,58,0x0000);
-      snprintf(buf,sizeof(buf),"FW: " VERSION);
-      tft_draw_str(2,13,buf,0xFFFF,0x0000);
-      snprintf(buf,sizeof(buf),"ID: %s",fanet.getMyDevId().c_str());
-      tft_draw_str(2,25,buf,0x07FF,0x0000);
-      snprintf(buf,sizeof(buf),"Heap:%dkB",(int)(ESP.getFreeHeap()/1024));
-      tft_draw_str(2,37,buf,0x07E0,0x0000);
-      snprintf(buf,sizeof(buf),"WiFi: %s",
-        status.wifiAP.state==CONNECTED?"ON":"OFF");
-      tft_draw_str(2,49,buf,0xFFE0,0x0000);
-      snprintf(buf,sizeof(buf),"Batt:%dmV",(int)status.battery.voltage);
-      tft_draw_str(2,61,buf,0xF800,0x0000);
-    }
+    lcd.run();
+    delay(200); // lcd.run() gates redraws to 1 s anyway; 5 polls/s is plenty
+    if (bPowerOff) break;
   }
-
-  log_i("taskTFT: stop");
+  lcd.end();
+  log_i("taskLCD: stop");
   vTaskDelete(xHandleTFT);
 }
 #endif // WIRELESS_TRACKER

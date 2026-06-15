@@ -30,13 +30,6 @@ extern volatile uint32_t gtReceived;
 
 
 
-//define the pins used by the LoRa transceiver module
-#define SCK 5
-#define MISO 19
-#define MOSI 27
-#define SS 18
-#define RST 23
-#define DIO0 26
 
 //#define FREQUENCY868 868200012
 #define FREQUENCY868 868200000
